@@ -1,0 +1,351 @@
+/* =====================
+   RESET & BASE
+===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #eaf1f8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =====================
+   TOP TABS (nav principale)
+===================== */
+.top-tabs {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  padding: 0 40px;
+  border-bottom: 1px solid #e3eaf2;
+  height: 52px;
+}
+
+.tab {
+  text-decoration: none;
+  color: #5a6a84;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding-bottom: 4px;
+  border-bottom: 2.5px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: #2b4cdb;
+  border-bottom: 2.5px solid #2b4cdb;
+}
+
+.tab:hover {
+  color: #2b4cdb;
+}
+
+/* =====================
+   MAIN
+===================== */
+main {
+  max-width: 1100px;
+  margin: 32px auto;
+  padding: 0 24px;
+  width: 100%;
+}
+
+/* =====================
+   PAGE CARD
+===================== */
+.page-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 40px;
+  box-shadow: 0 2px 12px rgba(79, 110, 242, 0.07);
+  min-height: 580px;
+}
+
+/* =====================
+   PAGE HEADER
+===================== */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.page-header h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1a2b4a;
+}
+
+.header-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+/* Bouton "à valider" — outline arrondi */
+.btn-validate {
+  border: 1.5px solid #1a2b4a;
+  color: #1a2b4a;
+  background: transparent;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-validate:hover {
+  background: #1a2b4a;
+  color: #fff;
+}
+
+/* Bouton "Ajouter" — plein bleu */
+.btn-add {
+  background: #2b4cdb;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-add:hover {
+  background: #1a35b5;
+}
+
+/* =====================
+   SUB TABS
+===================== */
+.sub-tabs {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 0;
+}
+
+.sub-tab {
+  text-decoration: none;
+  color: #5a6a84;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 2.5px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.sub-tab.active {
+  color: #2b4cdb;
+  border-bottom: 2.5px solid #2b4cdb;
+}
+
+.sub-tab:hover {
+  color: #2b4cdb;
+}
+
+/* =====================
+   DIVIDER
+===================== */
+.divider {
+  border: none;
+  border-top: 1px solid #e3eaf2;
+  margin: 0 0 24px 0;
+}
+
+/* =====================
+   SECTION HEADER
+===================== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.section-header h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a2b4a;
+}
+
+.dossiers-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #5a6a84;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.dossiers-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.dossiers-link:hover {
+  color: #2b4cdb;
+}
+
+/* =====================
+   COLLABORATEUR CARD
+===================== */
+.collaborateur-card {
+  border: 1px solid #e3eaf2;
+  border-radius: 12px;
+  padding: 20px 24px;
+  width: 320px;
+}
+
+/* Header du collaborateur */
+.collab-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.collab-avatar {
+  width: 36px;
+  height: 36px;
+  background: #dbe6f8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2b4cdb;
+}
+
+.collab-avatar svg {
+  width: 20px;
+  height: 20px;
+}
+
+.collab-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a2b4a;
+}
+
+.card-divider {
+  border: none;
+  border-top: 1px solid #e3eaf2;
+  margin-bottom: 16px;
+}
+
+/* Rôles */
+.collab-roles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.roles-label {
+  font-size: 0.82rem;
+  color: #7a8fa8;
+  font-weight: 600;
+}
+
+.role-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: #1a2b4a;
+  font-weight: 600;
+}
+
+/* =====================
+   TOGGLE SWITCH
+===================== */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #ccc;
+  border-radius: 50px;
+  transition: background 0.3s;
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.toggle input:checked + .slider {
+  background: #22c55e;
+}
+
+.toggle input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+/* =====================
+   ASSISTANCE BUTTON
+===================== */
+.assistance-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: #1a2b4a;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 22px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(26, 43, 74, 0.25);
+  transition: background 0.2s;
+}
+
+.assistance-btn:hover {
+  background: #2b4cdb;
+}
+
+.assistance-btn svg {
+  width: 16px;
+  height: 16px;
+}

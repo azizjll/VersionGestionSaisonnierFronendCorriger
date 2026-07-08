@@ -1,0 +1,329 @@
+<div class="auth-wrapper">
+
+  <!-- ===== ÉCRAN LOGIN ===== -->
+  <div class="auth-screen" *ngIf="currentView === 'login'" @fadeSlide>
+
+    <div class="auth-card">
+
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="18" fill="url(#brandGrad)"/>
+            <path d="M11 18l5 5L25 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="brandGrad" x1="0" y1="0" x2="36" y2="36">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#1d4ed8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Espace Saisonnier</span>
+          <span class="brand-sub">Portail candidatures</span>
+        </div>
+      </div>
+
+      <div class="auth-header">
+        <h1>Bienvenue</h1>
+        <p>Connectez-vous pour accéder à votre espace</p>
+      </div>
+
+      <!-- ALERT -->
+      <div class="auth-alert" *ngIf="loginError">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ loginError }}
+      </div>
+
+      <form class="auth-form" #loginForm="ngForm" (ngSubmit)="onLogin(loginForm)">
+
+        <div class="field-group" >
+          <label class="field-label" for="email">Adresse email</label>
+          <div class="input-wrapper" [class.focused]="emailFocused" [class.has-error]="emailCtrl.invalid && emailCtrl.touched">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input
+              type="email"
+              name="email" id="email"
+              placeholder="votre@email.com"
+              [(ngModel)]="loginData.email"
+              #emailCtrl="ngModel"
+              required
+              email
+              (focus)="emailFocused = true"
+              (blur)="emailFocused = false"
+            />
+          </div>
+          <small class="field-error" *ngIf="emailCtrl.invalid && emailCtrl.touched">
+            Email invalide ou manquant
+          </small>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label  class="field-label" for="password">Mot de passe</label>
+            <button type="button" class="link-btn" (click)="currentView = 'forgot'">Mot de passe oublié ?</button>
+          </div>
+          <div class="input-wrapper" [class.focused]="pwFocused" [class.has-error]="pwCtrl.invalid && pwCtrl.touched">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              name="password" id="password"
+              placeholder="••••••••"
+              [(ngModel)]="loginData.password"
+              #pwCtrl="ngModel"
+              required
+              minlength="6"
+              (focus)="pwFocused = true"
+              (blur)="pwFocused = false"
+            />
+            <button type="button" class="toggle-pw" (click)="showPassword = !showPassword">
+              <svg *ngIf="!showPassword" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg *ngIf="showPassword" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <small class="field-error" *ngIf="pwCtrl.invalid && pwCtrl.touched">
+            Mot de passe requis (min. 6 caractères)
+          </small>
+        </div>
+
+        <button type="submit" class="btn-auth" [class.loading]="isLoading">
+          <span *ngIf="!isLoading">Se connecter</span>
+          <span *ngIf="isLoading" class="spinner"></span>
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- ===== ÉCRAN MOT DE PASSE OUBLIÉ ===== -->
+  <div class="auth-screen" *ngIf="currentView === 'forgot'" @fadeSlide>
+
+    <div class="auth-card">
+
+      <button class="back-btn" (click)="currentView = 'login'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Retour à la connexion
+      </button>
+
+      <div class="auth-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </div>
+
+      <div class="auth-header">
+        <h1>Mot de passe oublié</h1>
+        <p>Saisissez votre email pour recevoir un lien de réinitialisation</p>
+      </div>
+
+      <div class="auth-success" *ngIf="forgotSuccess">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        Un email de réinitialisation a été envoyé à <strong>{{ forgotEmail }}</strong>
+      </div>
+
+      <form class="auth-form" *ngIf="!forgotSuccess" #forgotForm="ngForm" (ngSubmit)="onForgotPassword(forgotForm)">
+
+        <div class="field-group">
+          <label class="field-label" for="forgotEmail">Adresse email</label>
+          <div class="input-wrapper" [class.focused]="forgotEmailFocused">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input
+              type="email"
+              name="forgotEmail" id="forgotEmail"
+              placeholder="votre@email.com"
+              [(ngModel)]="forgotEmail"
+              #forgotEmailCtrl="ngModel"
+              required
+              email
+              (focus)="forgotEmailFocused = true"
+              (blur)="forgotEmailFocused = false"
+            />
+          </div>
+          <small class="field-error" *ngIf="forgotEmailCtrl.invalid && forgotEmailCtrl.touched">
+            Adresse email invalide
+          </small>
+        </div>
+
+        <button type="submit" class="btn-auth" [class.loading]="isLoading">
+          <span *ngIf="!isLoading">Envoyer le lien</span>
+          <span *ngIf="isLoading" class="spinner"></span>
+        </button>
+
+      </form>
+
+      <button class="link-center" *ngIf="forgotSuccess" (click)="currentView = 'login'">
+        Retour à la connexion
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- ===== ÉCRAN NOUVEAU MOT DE PASSE ===== -->
+  <div class="auth-screen" *ngIf="currentView === 'reset'" @fadeSlide>
+
+    <div class="auth-card">
+
+      <div class="auth-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+      </div>
+
+      <div class="auth-header">
+        <h1>Nouveau mot de passe</h1>
+        <p>Choisissez un mot de passe sécurisé pour votre compte</p>
+      </div>
+
+      <div class="auth-success" *ngIf="resetSuccess">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        Mot de passe mis à jour avec succès !
+        <button class="link-btn" (click)="currentView = 'login'">Se connecter</button>
+      </div>
+
+      <form class="auth-form" *ngIf="!resetSuccess" #resetForm="ngForm" (ngSubmit)="onResetPassword(resetForm)">
+
+        <div class="field-group">
+          <label class="field-label" for="newPassword">Nouveau mot de passe</label>
+          <div class="input-wrapper" [class.focused]="newPwFocused">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input
+              [type]="showNewPw ? 'text' : 'password'"
+              name="newPassword" id="newPassword"
+              placeholder="Nouveau mot de passe"
+              [(ngModel)]="resetData.newPassword"
+              #newPwCtrl="ngModel"
+              required
+              minlength="8"
+              (focus)="newPwFocused = true"
+              (blur)="newPwFocused = false"
+            />
+            <button type="button" class="toggle-pw" (click)="showNewPw = !showNewPw">
+              <svg *ngIf="!showNewPw" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg *ngIf="showNewPw" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <small class="field-error" *ngIf="newPwCtrl.invalid && newPwCtrl.touched">
+            Minimum 8 caractères requis
+          </small>
+
+          <!-- Indicateur de force -->
+          <div class="pw-strength" *ngIf="resetData.newPassword">
+            <div class="strength-bars">
+              <div class="bar" [class.active]="pwStrength >= 1" [class]="'bar ' + strengthClass"></div>
+              <div class="bar" [class.active]="pwStrength >= 2" [class]="'bar ' + strengthClass"></div>
+              <div class="bar" [class.active]="pwStrength >= 3" [class]="'bar ' + strengthClass"></div>
+              <div class="bar" [class.active]="pwStrength >= 4" [class]="'bar ' + strengthClass"></div>
+            </div>
+            <span class="strength-label">{{ strengthLabel }}</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="confirmPassword">Confirmer le mot de passe</label>
+          <div class="input-wrapper" [class.focused]="confirmPwFocused" [class.has-error]="resetData.confirmPassword && resetData.newPassword !== resetData.confirmPassword">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input
+              [type]="showConfirmPw ? 'text' : 'password'"
+              name="confirmPassword"  id="confirmPassword"
+              placeholder="Confirmer le mot de passe"
+              [(ngModel)]="resetData.confirmPassword"
+              (focus)="confirmPwFocused = true"
+              (blur)="confirmPwFocused = false"
+            />
+            <button type="button" class="toggle-pw" (click)="showConfirmPw = !showConfirmPw">
+              <svg *ngIf="!showConfirmPw" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg *ngIf="showConfirmPw" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <small class="field-error" *ngIf="resetData.confirmPassword && resetData.newPassword !== resetData.confirmPassword">
+            Les mots de passe ne correspondent pas
+          </small>
+        </div>
+
+        <button
+          type="submit"
+          class="btn-auth"
+          [class.loading]="isLoading"
+          [disabled]="resetData.newPassword !== resetData.confirmPassword"
+        >
+          <span *ngIf="!isLoading">Mettre à jour</span>
+          <span *ngIf="isLoading" class="spinner"></span>
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ===== MODAL : CONNEXION REQUISE ===== -->
+<div class="modal-overlay" 
+  *ngIf="showLoginRequired" 
+  (click)="closeLoginRequired()" 
+  (keydown.enter)="closeLoginRequired()"
+  (keydown.escape)="closeLoginRequired()"
+  role="button"
+  tabindex="0"
+  @fadeSlide>
+  <div class="login-required-modal" 
+    (click)="$event.stopPropagation()"
+    (keydown.enter)="$event.stopPropagation()">
+    <div class="lrm-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0110 0v4"/>
+      </svg>
+    </div>
+    <h3>Connexion requise</h3>
+    <p>Vous devez être connecté pour accéder à <strong>{{ lockedSection }}</strong>.</p>
+    <div class="lrm-actions">
+      <button class="btn-cancel-sm" (click)="closeLoginRequired()">Plus tard</button>
+      <button class="btn-auth-sm" (click)="goToLogin()">Se connecter</button>
+    </div>
+  </div>
+</div>

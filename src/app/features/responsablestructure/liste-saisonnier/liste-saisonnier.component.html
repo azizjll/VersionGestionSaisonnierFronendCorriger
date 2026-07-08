@@ -1,0 +1,106 @@
+<div class="ls-page">
+  <div class="ls-topbar">
+    <div>
+      <h1 class="ls-topbar__title">Gestion de présence</h1>
+      <p class="ls-topbar__sub">Campagne active · Ma direction</p>
+    </div>
+  </div>
+
+  <div class="ls-content">
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="ls-loading">
+      <i class="ti ti-loader-2"></i> Chargement...
+    </div>
+
+    <!-- Tableau -->
+    <div *ngIf="!loading" class="ls-table-wrap">
+
+      <div *ngIf="filtered.length === 0" class="ls-empty">
+        <i class="ti ti-inbox"></i>
+        <p>Aucune candidature pour ce filtre.</p>
+      </div>
+
+      <table *ngIf="filtered.length > 0" class="ls-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nom et Prénom</th>          <!-- ← une seule colonne -->
+            <th class="th-jours">Nb jours d'absence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of filtered; let i = index">
+            <td class="td-index">{{ i + 1 }}</td>
+
+            <!-- Nom + Prénom sur la même ligne -->
+            <td>
+              <div class="td-avatar-row">
+               
+                <span class="td-fullname">
+                  {{ c.saisonnier?.nom ?? '—' }} {{ c.saisonnier?.prenom ?? '' }}
+                </span>
+              </div>
+            </td>
+
+<td class="td-jours">
+  <div class="jours-control">
+
+    <!-- Input + flèches haut/bas -->
+    <div class="jours-input-wrap">
+      <input type="number" class="jours-input" min="0"
+        [value]="joursDemandes[c.id]"
+        (change)="onJoursChange(c.id, +$any($event.target).value)" />
+
+      <div class="jours-spin">
+        <button type="button" class="jours-spin-btn"
+          (click)="onJoursChange(c.id, joursDemandes[c.id] + 1)">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M6 15l6-6 6 6"/>
+          </svg>
+        </button>
+        <button type="button" class="jours-spin-btn"
+          (click)="onJoursChange(c.id, joursDemandes[c.id] - 1)"
+          [disabled]="joursDemandes[c.id] <= 0">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bouton Sauvegarder avec texte -->
+    <button type="button" class="btn-sauvegarder"
+      [class.is-success]="saveSuccess[c.id]"
+      [class.is-loading]="saveLoading[c.id]"
+      (click)="sauvegarderAbsences(c)"
+      [disabled]="saveLoading[c.id]">
+
+      <!-- Icône loader (en cours) -->
+      <svg *ngIf="saveLoading[c.id]" class="icon-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 3a9 9 0 1 0 9 9" stroke-linecap="round"/>
+      </svg>
+
+      <!-- Icône check (succès) -->
+      <svg *ngIf="!saveLoading[c.id] && saveSuccess[c.id]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
+      <!-- Icône disquette (par défaut) -->
+      <svg *ngIf="!saveLoading[c.id] && !saveSuccess[c.id]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <path d="M17 21v-8H7v8M7 3v5h8"/>
+      </svg>
+
+      <span>{{ saveLoading[c.id] ? 'Sauvegarde...' : (saveSuccess[c.id] ? 'Sauvegardé' : 'Sauvegarder') }}</span>
+    </button>
+
+  </div>
+</td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

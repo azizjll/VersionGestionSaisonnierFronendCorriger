@@ -1,0 +1,87 @@
+.slider-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+
+  // ✅ Ratio naturel de tes images (ex: 1440x480 = 33.3%)
+  // Calcul : (hauteur / largeur) * 100
+  padding-bottom: 33.3%; // adapte selon le ratio de tes images
+  height: 0; // important !
+
+  @media (max-width: 768px) {
+    padding-bottom: 40%; // un peu plus haut sur mobile
+  }
+}
+
+.slider-track {
+  position: absolute; // ✅ changé en absolute
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+  pointer-events: none;
+
+  &.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill; // ✅ affiche l'image complète sans couper
+    display: block;
+  }
+}
+
+// Flèches — inchangées
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.45);
+  color: white;
+  border: none;
+  font-size: 2.5rem;
+  padding: 0.2rem 0.8rem;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 4px;
+  transition: background 0.3s;
+
+  &:hover { background: rgba(0, 0, 0, 0.75); }
+  &-left  { left: 10px; }
+  &-right { right: 10px; }
+}
+
+// Dots — inchangés
+.dots {
+  position: absolute;
+  bottom: 12px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.3s;
+  &.active { background: white; }
+}

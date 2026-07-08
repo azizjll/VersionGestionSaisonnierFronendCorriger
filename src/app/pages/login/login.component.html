@@ -1,0 +1,133 @@
+<div class="login-page">
+  
+  
+
+  <div class="container" id="container">
+    
+    <!-- Sign Up Form -->
+    <div class="form-container sign-up-container">
+     <!-- Sign Up Form -->
+        <form (ngSubmit)="onSignup()">
+        <h1>Create Account</h1>
+
+        <!-- CIN et Telephone sur la même ligne -->
+        <!-- CIN et Telephone -->
+
+
+            <!-- Nom et Prenom -->
+            <div class="row">
+            <input type="text" placeholder="Nom" [(ngModel)]="signupData.nom" name="nom" required />
+            <input type="text" placeholder="Prénom" [(ngModel)]="signupData.prenom" name="prenom" required />
+            </div>
+
+            <input type="email" placeholder="Email" [(ngModel)]="signupData.email" name="email" required />
+            <input type="password" placeholder="Password" [(ngModel)]="signupData.password" name="password" required />
+
+            <!-- Dropdown Role -->
+              <div class="select-wrapper">
+                <select [(ngModel)]="signupData.role" name="role" required>
+                    <option value="" disabled selected>Rôle</option>
+                    <option value="RH_REGIONAL">RH_REGIONAL</option>
+                </select>
+              </div>
+
+            <!-- Dropdown Region -->
+<div class="select-wrapper">
+  <select [(ngModel)]="signupData.regionId" name="regionId" required>
+      <option [ngValue]="undefined" disabled>DRT (Direction Régionale Tunisie)</option>
+      <option *ngFor="let region of regions" [value]="region.id">
+        {{ region.nom }}
+      </option>
+  </select>
+</div>
+
+        <button type="submit">Sign Up</button>
+        </form>
+    </div>
+    
+
+    <!-- Sign In Form -->
+    <!-- Sign In Form -->
+<div class="form-container sign-in-container">
+        
+  <form>
+
+    <div class="logo-container">
+      <img src="assets/logo.png" alt="Tunisie Telecom Logo" />
+    </div>
+
+    <!-- TITRES -->
+    <h1 *ngIf="!forgotMode && !resetMode">Sign in</h1>
+    <h1 *ngIf="forgotMode">Forgot Password</h1>
+    <h1 *ngIf="resetMode">Reset Password</h1>
+
+    <span *ngIf="!forgotMode && !resetMode">or use your account</span>
+    <span *ngIf="forgotMode">Enter your email to receive reset link</span>
+    <span *ngIf="resetMode">Enter your new password</span>
+
+    <!-- MODE LOGIN -->
+    <div *ngIf="!forgotMode && !resetMode">
+      <input type="email" placeholder="Email"
+             [(ngModel)]="signinData.email" name="email" required />
+
+      <input type="password" placeholder="Password"
+             [(ngModel)]="signinData.password" name="password" required />
+
+      <a href="#" (click)="toggleForgot(); $event.preventDefault()">
+        Forgot your password?
+      </a>
+
+      <button type="button" (click)="onSignin()">Sign In</button>
+    </div>
+
+    <!-- MODE FORGOT PASSWORD -->
+    <div *ngIf="forgotMode">
+      <input type="email" placeholder="Email"
+             [(ngModel)]="forgotEmail" name="forgotEmail" required />
+
+      <button type="button" (click)="onForgotPassword()">Envoyer</button>
+
+      <a href="#" (click)="toggleForgot(); $event.preventDefault()">
+        Retour à la connexion
+      </a>
+    </div>
+
+    <!-- MODE RESET PASSWORD -->
+    <div *ngIf="resetMode">
+      <input type="password" placeholder="Nouveau mot de passe"
+             [(ngModel)]="newPassword" name="newPassword" required />
+
+      <button type="button" (click)="onResetPassword()">Envoyer</button>
+    </div>
+
+  </form>
+
+</div>
+
+    <!-- Overlay -->
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>Welcome Back!</h1>
+          <p>To keep connected with us please login with your personal info</p>
+          <button class="ghost" id="signIn">Sign In</button>
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h1>Hello, Friend!</h1>
+          <p>Enter your personal details and start journey with us</p>
+          <button class="ghost" id="signUp">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message succès / erreur -->
+  <div class="message" *ngIf="message">{{ message }}</div>
+
+  <footer>
+    <p>
+      Created with <i class="fa fa-heart"></i> by
+      <a target="_blank" href="https://florin-pop.com">Florin Pop</a>.
+    </p>
+  </footer>
+</div>

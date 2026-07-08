@@ -1,0 +1,8 @@
+.main-container {
+  transition: padding-top 0.3s ease;
+  padding-top: 6rem;  // hauteur de app-navbar
+}
+
+.full-page {
+  padding-top: 0 !important; // quand app-navbar est cachée
+}

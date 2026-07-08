@@ -1,0 +1,203 @@
+<section class="hero">
+  <div class="globe-dots"></div>
+
+  <div class="hero-content">
+    <h1>
+      Plateforme de Gestion<br>
+      <span class="highlight">des Saisonniers</span>
+    </h1>
+
+    <!-- ===== FORMULAIRE DE CONNEXION ===== -->
+    <div class="login-form">
+      <h3>Accédez à votre espace</h3>
+
+      <div class="form-group">
+        <input
+          type="text"
+          [(ngModel)]="matricule"
+          placeholder="Matricule"
+          class="form-input"
+          (keyup.enter)="login()"
+        />
+      </div>
+
+      
+
+      <div class="form-group password-container">
+  <input
+    [type]="showPassword ? 'text' : 'password'"
+    [(ngModel)]="password"
+    placeholder="Mot de passe"
+    class="form-input"
+    (keyup.enter)="login()"
+  />
+
+  <i
+    class="fa"
+    [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+    (click)="togglePassword()"
+  ></i>
+</div>
+
+      
+
+       <div class="error-banner" *ngIf="errorMessage">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text">{{ errorMessage }}</span>
+    </div>
+
+      <button class="btn-login" (click)="login()" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Se connecter</span>
+        <span *ngIf="isLoading">Connexion...</span>
+      </button>
+
+       <div style="text-align:center; margin-top:12px">
+  <a
+    (click)="openForgotPassword()"
+    style="font-weight:bold; cursor:pointer;"
+  >
+    Mot de passe oublié ?
+  </a>
+</div>
+    
+    </div>
+    <!-- ===== FIN FORMULAIRE ===== -->
+
+    
+    
+  </div>
+
+  <div class="wave-bottom">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path d="M0,0 C360,120 1080,120 1440,0 L1440,120 L0,120 Z" fill="white"/>
+    </svg>
+  </div>
+</section>
+<!--
+<div class="tt-deco tt-deco-4">
+  <img src="assets/logo.png" alt="" aria-hidden="true" width="110" />
+</div>
+-->
+
+<div class="modal-overlay" *ngIf="modalStep" (click)="closeModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+
+    <!-- Indicateur étapes -->
+    <div class="modal-steps">
+      <div class="dot" [class.active]="modalStep === 'email'"></div>
+      <div class="dot" [class.active]="modalStep === 'code'"></div>
+      <div class="dot" [class.active]="modalStep === 'password'"></div>
+    </div>
+
+    <!-- ÉTAPE 1 : EMAIL -->
+    <ng-container *ngIf="modalStep === 'email'">
+      <div class="modal-icon icon-blue">
+        <svg width="24" height="24" fill="none" stroke="#185FA5" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M2 7l10 7 10-7"/>
+        </svg>
+      </div>
+      <div style="text-align:center">
+        <span class="modal-step-badge badge-blue">Étape 1 / 3</span>
+      </div>
+      <h3>Mot de passe oublié ?</h3>
+      <p class="modal-desc">Entrez votre email. Vous recevrez un code à 6 chiffres valable 15 minutes.</p>
+      <hr class="modal-divider"/>
+      <input type="email" [(ngModel)]="fpEmail" placeholder="votre@email.com"
+             class="form-input" (keyup.enter)="sendResetCode()"/>
+      <div class="error-msg" *ngIf="fpError">{{ fpError }}</div>
+      <button class="btn-modal-primary blue" (click)="sendResetCode()" [disabled]="fpLoading">
+        {{ fpLoading ? 'Envoi en cours...' : 'Envoyer le code' }}
+      </button>
+      <button class="btn-modal-back" (click)="closeModal()">Annuler</button>
+    </ng-container>
+
+    <!-- ÉTAPE 2 : CODE -->
+    <ng-container *ngIf="modalStep === 'code'">
+          <div class="modal-icon icon-amber">
+      <svg width="24" height="24" fill="none" stroke="#854F0B" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+    </div>
+      <div style="text-align:center">
+        <span class="modal-step-badge badge-amber">Étape 2 / 3</span>
+      </div>
+      <h3>Vérification du code</h3>
+      <p class="modal-desc">
+        Un code a été envoyé à <strong style="color:#2b1de8">{{ fpEmail }}</strong>.
+      </p>
+      <hr class="modal-divider"/>
+      <input type="text" [(ngModel)]="fpCode" placeholder="• • • • • •"
+             class="form-input code-input" maxlength="6" (keyup.enter)="verifyCode()"/>
+      <p class="modal-resend">
+        Pas reçu ? <span (click)="sendResetCode()">Renvoyer le code</span>
+      </p>
+      <div class="error-msg" *ngIf="fpError">{{ fpError }}</div>
+      <button class="btn-modal-primary amber" (click)="verifyCode()" [disabled]="!fpCode">
+        Confirmer le code
+      </button>
+      <button class="btn-modal-back" (click)="modalStep = 'email'">← Retour</button>
+    </ng-container>
+
+    <!-- ÉTAPE 3 : NOUVEAU MOT DE PASSE -->
+    <ng-container *ngIf="modalStep === 'password'">
+      <div class="modal-icon icon-green">
+        <svg width="24" height="24" fill="none" stroke="#3B6D11" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+        </svg>
+      </div>
+      <div style="text-align:center">
+        <span class="modal-step-badge badge-green">Étape 3 / 3</span>
+      </div>
+      <h3>Nouveau mot de passe</h3>
+      <p class="modal-desc">Choisissez un mot de passe sécurisé d'au moins 8 caractères.</p>
+      <hr class="modal-divider"/>
+      <input type="password" [(ngModel)]="fpNewPassword"
+             placeholder="Nouveau mot de passe" class="form-input"/>
+      <input type="password" [(ngModel)]="fpConfirmPassword"
+             placeholder="Confirmer le mot de passe" class="form-input"
+             style="margin-top: 6px" (keyup.enter)="resetPassword()"/>
+      <div class="error-msg"   *ngIf="fpError">{{ fpError }}</div>
+      <div class="success-msg" *ngIf="fpSuccess">{{ fpSuccess }}</div>
+      <button class="btn-modal-primary green" (click)="resetPassword()" [disabled]="fpLoading">
+        {{ fpLoading ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+      <button class="btn-modal-back" (click)="modalStep = 'code'">← Retour</button>
+    </ng-container>
+
+  </div>
+</div>
+
+
+<!-- ===== POPUP CHOIX RÔLE SUPERADMIN ===== -->
+<div class="modal-overlay" *ngIf="showRoleChooser" (click)="closeRoleChooser()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-icon icon-blue">
+      <svg width="24" height="24" fill="none" stroke="#185FA5" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+
+    <h3 style="text-align:center">Choisissez votre espace</h3>
+    <p class="modal-desc">Vous êtes connecté en tant que <strong>Super Administrateur</strong>. Où souhaitez-vous accéder ?</p>
+    <hr class="modal-divider"/>
+
+    <button class="btn-modal-primary blue" (click)="goToSuperAdmin()">
+      👤 Responsable Administrateur
+      <small style="display:block; font-size:11px; opacity:0.8; margin-top:2px">/superadmin/user_list</small>
+    </button>
+
+    <button class="btn-modal-primary" style="background:#eaf3de; color:#3B6D11; border:1px solid #97C459; margin-top:8px" (click)="goToAdminRH()">
+      🏢 Administrateur RH
+      <small style="display:block; font-size:11px; opacity:0.7; margin-top:2px">/admin</small>
+    </button>
+
+    <button class="btn-modal-back" (click)="closeRoleChooser()">Annuler</button>
+  </div>
+</div>

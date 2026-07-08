@@ -1,0 +1,44 @@
+<div class="rs-layout">
+  <aside class="rs-sidebar">
+    <div class="rs-sidebar__header">
+      <div class="rs-logo">
+        <span class="rs-logo__icon"><i class="ti ti-building"></i></span>
+        <div>
+          <span class="rs-logo__title">Direction</span>
+          <span class="rs-logo__sub">Responsable Structure</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="rs-nav">
+      <span class="rs-nav__label">Principal</span>
+      <a *ngFor="let item of navItems"
+         [routerLink]="item.route"
+         routerLinkActive="rs-nav__item--active"
+         class="rs-nav__item">
+        <i class="ti ti-{{ item.icon }}"></i>
+        {{ item.label }}
+        <span *ngIf="item.badge" class="rs-nav__badge">{{ item.badge }}</span>
+      </a>
+    </nav>
+
+    <div class="rs-sidebar__footer">
+      <div class="rs-user">
+        <div class="rs-user__avatar">RS</div>
+        <div class="rs-user__info">
+          <span class="rs-user__name">Resp. Structure</span>
+          <span class="rs-user__role">Direction Nord</span>
+        </div>
+      </div>
+
+       <button class="rs-logout-btn" (click)="logout()">
+    <i class="ti ti-logout"></i>
+    Déconnexion
+  </button>
+    </div>
+  </aside>
+
+  <main class="rs-main">
+    <router-outlet />
+  </main>
+</div>

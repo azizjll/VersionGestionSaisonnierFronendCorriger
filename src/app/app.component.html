@@ -1,0 +1,12 @@
+<app-navbar [class.hidden]="!showLayout"></app-navbar>
+
+<div class="main-container" [class.full-page]="!showLayout">
+
+  <!-- Slider en premier dans le container (déjà compensé par padding-top) -->
+  <app-hero-slider *ngIf="showLayout"></app-hero-slider>
+
+  <router-outlet></router-outlet>
+
+</div>
+
+<app-footer [class.hidden]="!showLayout"></app-footer>

@@ -1,0 +1,695 @@
+<!-- ════════════════════════════════════════
+     users-list.component.html
+     ════════════════════════════════════════ -->
+
+<!-- ── PAGE HEADER ─────────────────────────────── -->
+<div class="ul-header">
+  <div class="ul-header__left">
+    <span class="ul-header__tag">
+      <span class="ul-header__tag-pulse"></span>
+      Gestion des comptes
+    </span>
+    <h1 class="ul-header__title">
+      <span class="ul-header__title-accent">U</span>tilisateurs
+    </h1>
+    <p class="ul-header__sub">Importez et administrez les comptes du système</p>
+  </div>
+
+  <div class="ul-header__kpis">
+    <div class="ul-kpi">
+      <div class="ul-kpi__inner">
+        <span class="ul-kpi__num">{{ getTotalUsers() }}</span>
+        <span class="ul-kpi__lbl">Total</span>
+      </div>
+      <div class="ul-kpi__ring"></div>
+    </div>
+    <div class="ul-kpi">
+      <div class="ul-kpi__inner">
+        <span class="ul-kpi__num">{{ getCountByRole('SUPERADMIN') }}</span>
+        <span class="ul-kpi__lbl">Super Admin</span>
+      </div>
+      <div class="ul-kpi__ring"></div>
+    </div>
+    <div class="ul-kpi">
+      <div class="ul-kpi__inner">
+        <span class="ul-kpi__num">{{ getCountByRole('ADMIN') }}</span>
+        <span class="ul-kpi__lbl">Admin RH</span>
+      </div>
+      <div class="ul-kpi__ring"></div>
+    </div>
+    <div class="ul-kpi">
+      <div class="ul-kpi__inner">
+        <span class="ul-kpi__num">{{ getCountByRole('RH_REGIONAL') }}</span>
+        <span class="ul-kpi__lbl">Resp. RH</span>
+      </div>
+      <div class="ul-kpi__ring"></div>
+    </div>
+    <div class="ul-kpi">
+      <div class="ul-kpi__inner">
+        <span class="ul-kpi__num">{{ getCountByRole('RESPONSABLE_STRUCTURE') }}</span>
+        <span class="ul-kpi__lbl">Resp. Structure</span>
+      </div>
+      <div class="ul-kpi__ring"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 1 — Import Utilisateurs Généraux
+     ════════════════════════════════════════════════════════ -->
+<div class="ul-section">
+  <div class="ul-section__label">
+    <span class="ul-section__num">01</span>
+    <div>
+      <h2 class="ul-section__title">Utilisateurs — RH &amp; Administration</h2>
+      <p class="ul-section__desc">Super Admin, Administrateurs RH, Responsables RH</p>
+    </div>
+  </div>
+
+  <!-- Import zone 1 -->
+  <div class="ul-import">
+    <div class="ul-drop"
+         [class.ul-drop--over]="isDragging1"
+         [class.ul-drop--filled]="selectedFile1"
+         (dragover)="onDragOver($event, 1)"
+         (dragleave)="onDragLeave(1)"
+         (drop)="onDrop($event, 1)"
+         (click)="!selectedFile1 && fileInput1.click()"(keydown.enter)="!selectedFile1 && fileInput1.click()"(keydown.space)="!selectedFile1 && fileInput1.click()" role="button" [tabindex]="selectedFile1 ? -1 : 0" [attr.aria-label]="selectedFile1 ? null : 'Importer un fichier'">
+
+      <input #fileInput1 type="file" accept=".xlsx,.xls"
+             (change)="onFileSelected($event, 1)" hidden>
+      <div class="ul-drop__grid" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+
+      <ng-container *ngIf="!selectedFile1">
+        <div class="ul-drop__glow" aria-hidden="true"></div>
+        <div class="ul-drop__icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.6">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <polyline points="9 15 12 12 15 15"/>
+          </svg>
+        </div>
+        <p class="ul-drop__title">Glissez votre fichier Excel ici</p>
+        <p class="ul-drop__sub">ou <strong>cliquez pour parcourir</strong></p>
+        <div class="ul-drop__badges">
+          <span class="ul-badge">.xlsx</span>
+          <span class="ul-badge">.xls</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="selectedFile1">
+        <div class="ul-filechip">
+          <div class="ul-filechip__ico">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.8">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <div class="ul-filechip__info">
+            <span class="ul-filechip__name">{{ selectedFile1.name }}</span>
+            <span class="ul-filechip__size">{{ formatSize(selectedFile1.size) }}</span>
+          </div>
+          <button class="ul-filechip__rm" (click)="removeFile($event, 1)" aria-label="Supprimer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Meta panel 1 -->
+    <div class="ul-meta">
+      <div class="ul-meta__head">
+        <div class="ul-meta__icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <span class="ul-meta__title">Import Excel — Utilisateurs</span>
+      </div>
+
+      <div class="ul-rules">
+        <div class="ul-rule">
+          <span class="ul-rule__dot ul-rule__dot--em"></span>
+          <div class="ul-rule__body">
+            <strong>Colonnes requises</strong>
+            <p>Matricule, Nom &amp; Prénom, Email, Rôle, Direction</p>
+          </div>
+        </div>
+        <div class="ul-rule">
+          <span class="ul-rule__dot ul-rule__dot--amber"></span>
+          <div class="ul-rule__body">
+            <strong>Dédoublonnage auto</strong>
+            <p>Les emails et matricules existants sont ignorés</p>
+          </div>
+        </div>
+        <div class="ul-rule">
+          <span class="ul-rule__dot ul-rule__dot--violet"></span>
+          <div class="ul-rule__body">
+            <strong>Mot de passe</strong>
+            <p>Égal au matricule, envoyé par email automatiquement</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ul-result" *ngIf="importResult1">
+        <div class="ul-result__row ul-result__row--ok">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          {{ importResult1.created }} créés
+        </div>
+        <div class="ul-result__row ul-result__row--warn">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {{ importResult1.skipped }} ignorés
+        </div>
+        <div class="ul-result__row ul-result__row--del">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+          </svg>
+          {{ importResult1.deleted }} supprimés
+        </div>
+        <div class="ul-result__row ul-result__row--err"
+             *ngIf="importResult1.errors?.length">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          {{ importResult1.errors.length }} erreurs
+        </div>
+      </div>
+
+      <div class="ul-errlog" *ngIf="importResult1?.errors?.length">
+        <p class="ul-errlog__title">Détail des erreurs</p>
+        <ul class="ul-errlog__list">
+          <li *ngFor="let e of importResult1?.errors || []">{{ e }}</li>
+        </ul>
+      </div>
+
+      <div class="ul-meta__actions">
+        <button class="ul-btn ul-btn--ghost" (click)="downloadTemplate()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Modèle
+        </button>
+        <button class="ul-btn ul-btn--primary"
+                [disabled]="!selectedFile1 || importing1"
+                (click)="importFile1()">
+          <span class="ul-btn__spin" *ngIf="importing1"></span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" *ngIf="!importing1">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          {{ importing1 ? 'Importation…' : 'Lancer l\'importation' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau 1 -->
+  <div class="ul-table-card" *ngIf="allUsers.length > 0">
+    <div class="ul-table-card__head">
+      <div class="ul-table-card__left">
+        <span class="ul-tc-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </span>
+        <h2 class="ul-table-card__title">Utilisateurs importés</h2>
+        <span class="ul-count-pill">{{ filteredUsers1().length }}</span>
+      </div>
+      <div class="ul-toolbar">
+        <label class="ul-search">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" placeholder="Rechercher…"
+                 [(ngModel)]="searchQuery1" (ngModelChange)="onSearch1()"
+                 class="ul-search__input">
+        </label>
+        <select class="ul-select" [(ngModel)]="filterRole1" (ngModelChange)="onSearch1()">
+          <option value="">Tous les rôles</option>
+          <option *ngFor="let r of roles" [value]="r">{{ getRoleLabel(r) }}</option>
+        </select>
+        <select class="ul-select ul-select--sm" [(ngModel)]="pageSize1" (ngModelChange)="page1=1">
+          <option [value]="5">5 / page</option>
+          <option [value]="10">10 / page</option>
+          <option [value]="25">25 / page</option>
+          <option [value]="50">50 / page</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ul-scroll">
+      <table class="ul-tbl">
+        <thead>
+          <tr>
+            <th class="c-n">#</th>
+            <th class="c-u">Utilisateur</th>
+            <th class="c-e">Email</th>
+            <th class="c-m">Matricule</th>
+            <th class="c-r">Rôle</th>
+            <th class="c-g">Direction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="ul-tbl__row"
+              *ngFor="let u of pagedUsers1(); let i = index"
+              [style.animation-delay]="(i * 0.04) + 's'">
+            <td class="c-n c-num">
+              <span class="row-idx">{{ (page1 - 1) * pageSize1 + i + 1 }}</span>
+            </td>
+            <td class="c-u">
+              <div class="uc">
+                <div class="uc__av" [attr.data-letter]="getInitials(u).charAt(0)">{{ getInitials(u) }}</div>
+                <div class="uc__txt">
+                  <span class="uc__name">{{ u.prenom }} {{ u.nom }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="c-e">
+              <span class="email-chip">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                {{ u.email }}
+              </span>
+            </td>
+            <td class="c-m"><span class="mono-chip">{{ u.matricule }}</span></td>
+            <td class="c-r">
+              <span class="role-tag" [ngClass]="getRoleClass(u.role)">
+                <span class="role-tag__dot"></span>
+                {{ getRoleLabel(u.role) }}
+              </span>
+            </td>
+            <td class="c-g"><span class="region-lbl">{{ u.region?.nom || '—' }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination 1 -->
+    <div class="ul-pagination" *ngIf="totalPages1() > 1">
+      <button class="ul-pg-btn" [disabled]="page1 === 1" (click)="goToPage1(page1 - 1)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <ng-container *ngFor="let p of pagesArray1()">
+        <button class="ul-pg-btn ul-pg-btn--num"
+                [class.ul-pg-btn--active]="p === page1"
+                (click)="goToPage1(p)">{{ p }}</button>
+      </ng-container>
+      <button class="ul-pg-btn" [disabled]="page1 === totalPages1()" (click)="goToPage1(page1 + 1)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+      <span class="ul-pg-info">
+        Page {{ page1 }} / {{ totalPages1() }} &nbsp;·&nbsp; {{ filteredUsers1().length }} résultats
+      </span>
+    </div>
+
+    <div class="ul-empty" *ngIf="filteredUsers1().length === 0">
+      <div class="ul-empty__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+      </div>
+      <p>Aucun résultat pour <strong>« {{ searchQuery1 }} »</strong></p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 2 — Import Responsables Structure
+     ════════════════════════════════════════════════════════ -->
+<div class="ul-section ul-section--rs">
+  <div class="ul-section__label">
+    <span class="ul-section__num ul-section__num--rs">02</span>
+    <div>
+      <h2 class="ul-section__title">Responsables Structure</h2>
+      <p class="ul-section__desc">Affectation directe à une structure — nécessite une campagne active</p>
+    </div>
+    <!-- Badge campagne requise -->
+    <div class="ul-campagne-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      Campagne ACTIVE requise
+    </div>
+  </div>
+
+  <!-- Import zone 2 -->
+  <div class="ul-import">
+    <div class="ul-drop ul-drop--rs"
+     [class.ul-drop--over]="isDragging2"
+     [class.ul-drop--filled]="selectedFile2"
+     (dragover)="onDragOver($event, 2)"
+     (dragleave)="onDragLeave(2)"
+     (drop)="onDrop($event, 2)"
+     (click)="!selectedFile2 && fileInput2.click()"
+     (keydown.enter)="!selectedFile2 && fileInput2.click()"
+     (keydown.space)="!selectedFile2 && fileInput2.click()"
+     role="button"
+     [tabindex]="selectedFile2 ? -1 : 0"
+     [attr.aria-label]="selectedFile2 ? null : 'Importer un fichier'">
+
+      <input #fileInput2 type="file" accept=".xlsx,.xls"
+             (change)="onFileSelected($event, 2)" hidden>
+      <div class="ul-drop__grid" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+
+      <ng-container *ngIf="!selectedFile2">
+        <div class="ul-drop__glow ul-drop__glow--rs" aria-hidden="true"></div>
+        <div class="ul-drop__icon ul-drop__icon--rs">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.6">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <polyline points="9 15 12 12 15 15"/>
+          </svg>
+        </div>
+        <p class="ul-drop__title">Glissez votre fichier Excel ici</p>
+        <p class="ul-drop__sub">ou <strong>cliquez pour parcourir</strong></p>
+        <div class="ul-drop__badges">
+          <span class="ul-badge">.xlsx</span>
+          <span class="ul-badge">.xls</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="selectedFile2">
+        <div class="ul-filechip">
+          <div class="ul-filechip__ico ul-filechip__ico--rs">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.8">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <div class="ul-filechip__info">
+            <span class="ul-filechip__name">{{ selectedFile2.name }}</span>
+            <span class="ul-filechip__size">{{ formatSize(selectedFile2.size) }}</span>
+          </div>
+          <button class="ul-filechip__rm" (click)="removeFile($event, 2)" aria-label="Supprimer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Meta panel 2 -->
+    <div class="ul-meta ul-meta--rs">
+      <div class="ul-meta__head">
+        <div class="ul-meta__icon ul-meta__icon--rs">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+        </div>
+        <span class="ul-meta__title">Import Excel — Responsables Structure</span>
+      </div>
+
+      <div class="ul-rules">
+        <div class="ul-rule">
+          <span class="ul-rule__dot ul-rule__dot--em"></span>
+          <div class="ul-rule__body">
+            <strong>Colonnes requises</strong>
+            <p>Matricule, Nom &amp; Prénom, Email, Rôle, Structure d'affectation</p>
+          </div>
+        </div>
+        <div class="ul-rule">
+          <span class="ul-rule__dot ul-rule__dot--amber"></span>
+          <div class="ul-rule__body">
+            <strong>Structure automatique</strong>
+            <p>La région est déduite de la structure via la campagne active</p>
+          </div>
+        </div>
+        <div class="ul-rule">
+          <span class="ul-rule__dot ul-rule__dot--rs"></span>
+          <div class="ul-rule__body">
+            <strong>Aucun email envoyé</strong>
+            <p>Les RS ne reçoivent pas d'email à la création</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerte erreur campagne -->
+      <div class="ul-alert ul-alert--warn"
+           *ngIf="importResult2 && importResult2.errors?.length === 0 && importResult2.created === 0 && importResult2.skipped === 0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ importResult2.message }}
+      </div>
+
+      <div class="ul-result" *ngIf="importResult2 && (importResult2.created > 0 || importResult2.skipped > 0 || importResult2.deleted > 0)">
+        <div class="ul-result__row ul-result__row--ok">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          {{ importResult2.created }} créés
+        </div>
+        <div class="ul-result__row ul-result__row--warn">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {{ importResult2.skipped }} ignorés
+        </div>
+        <div class="ul-result__row ul-result__row--del">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+          </svg>
+          {{ importResult2.deleted }} supprimés
+        </div>
+        <div class="ul-result__row ul-result__row--err"
+             *ngIf="importResult2.errors?.length">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          {{ importResult2.errors.length }} erreurs
+        </div>
+      </div>
+
+      <div class="ul-errlog" *ngIf="importResult2?.errors?.length">
+        <p class="ul-errlog__title">Détail des erreurs</p>
+        <ul class="ul-errlog__list">
+          <li *ngFor="let e of importResult2?.errors || []">{{ e }}</li>
+        </ul>
+      </div>
+
+      <div class="ul-meta__actions">
+        <button class="ul-btn ul-btn--ghost" (click)="downloadTemplate()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Modèle
+        </button>
+        <button class="ul-btn ul-btn--rs"
+                [disabled]="!selectedFile2 || importing2"
+                (click)="importFile2()">
+          <span class="ul-btn__spin" *ngIf="importing2"></span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" *ngIf="!importing2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          {{ importing2 ? 'Importation…' : 'Importer Responsables Structure' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau 2 -->
+  <div class="ul-table-card ul-table-card--rs" *ngIf="rsUsers.length > 0">
+    <div class="ul-table-card__head">
+      <div class="ul-table-card__left">
+        <span class="ul-tc-icon ul-tc-icon--rs">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+        </span>
+        <h2 class="ul-table-card__title">Responsables Structure</h2>
+        <span class="ul-count-pill ul-count-pill--rs">{{ filteredUsers2().length }}</span>
+      </div>
+      <div class="ul-toolbar">
+        <label class="ul-search">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" placeholder="Nom, matricule, structure…"
+                 [(ngModel)]="searchQuery2" (ngModelChange)="onSearch2()"
+                 class="ul-search__input">
+        </label>
+        <select class="ul-select ul-select--sm" [(ngModel)]="pageSize2" (ngModelChange)="page2=1">
+          <option [value]="5">5 / page</option>
+          <option [value]="10">10 / page</option>
+          <option [value]="25">25 / page</option>
+          <option [value]="50">50 / page</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ul-scroll">
+      <table class="ul-tbl">
+        <thead>
+          <tr>
+            <th class="c-n">#</th>
+            <th class="c-u">Responsable</th>
+            <th class="c-e">Email</th>
+            <th class="c-m">Matricule</th>
+            <th class="c-g">Région</th>
+            <th class="c-s">Structure</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="ul-tbl__row"
+              *ngFor="let u of pagedUsers2(); let i = index"
+              [style.animation-delay]="(i * 0.04) + 's'">
+            <td class="c-n c-num">
+              <span class="row-idx">{{ (page2 - 1) * pageSize2 + i + 1 }}</span>
+            </td>
+            <td class="c-u">
+              <div class="uc">
+                <div class="uc__av uc__av--rs" [attr.data-letter]="getInitials(u).charAt(0)">{{ getInitials(u) }}</div>
+                <div class="uc__txt">
+                  <span class="uc__name">{{ u.prenom }} {{ u.nom }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="c-e">
+              <span class="email-chip">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                {{ u.email }}
+              </span>
+            </td>
+            <td class="c-m"><span class="mono-chip">{{ u.matricule }}</span></td>
+            <td class="c-g"><span class="region-lbl">{{ u.region?.nom || '—' }}</span></td>
+            <td class="c-s">
+              <span class="structure-chip" *ngIf="u.structure">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+                {{ u.structure.nom }}
+              </span>
+              <span class="region-lbl" *ngIf="!u.structure">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination 2 -->
+    <div class="ul-pagination" *ngIf="totalPages2() > 1">
+      <button class="ul-pg-btn" [disabled]="page2 === 1" (click)="goToPage2(page2 - 1)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <ng-container *ngFor="let p of pagesArray2()">
+        <button class="ul-pg-btn ul-pg-btn--num"
+                [class.ul-pg-btn--active]="p === page2"
+                (click)="goToPage2(p)">{{ p }}</button>
+      </ng-container>
+      <button class="ul-pg-btn" [disabled]="page2 === totalPages2()" (click)="goToPage2(page2 + 1)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+      <span class="ul-pg-info">
+        Page {{ page2 }} / {{ totalPages2() }} &nbsp;·&nbsp; {{ filteredUsers2().length }} résultats
+      </span>
+    </div>
+
+    <div class="ul-empty" *ngIf="filteredUsers2().length === 0">
+      <div class="ul-empty__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+      </div>
+      <p>Aucun résultat pour <strong>« {{ searchQuery2 }} »</strong></p>
+    </div>
+  </div>
+</div>

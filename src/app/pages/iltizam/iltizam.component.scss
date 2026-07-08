@@ -1,0 +1,459 @@
+// ── Variables ──────────────────────────────────────────────
+$blue:       #185FA5;
+$blue-light: #E6F1FB;
+$blue-mid:   #378ADD;
+$green:      #3B6D11;
+$green-light:#EAF3DE;
+$green-mid:  #639922;
+$gray-bg:    #F8F8F6;
+$gray-border:#E2E0D8;
+$gray-text:  #6B6A66;
+$red-light:  #FCEBEB;
+$red:        #A32D2D;
+
+// ── Page ──────────────────────────────────────────────────
+.iltizam-page {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  font-family: inherit;
+}
+
+// ── Header ────────────────────────────────────────────────
+.iltizam-header {
+  margin-bottom: 2rem;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0.5px solid $gray-border;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: $gray-text;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $gray-bg;
+  }
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: $blue-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    stroke: $blue;
+  }
+}
+
+.header-title h1 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 4px;
+  color: #1a1a18;
+}
+
+.header-title p {
+  font-size: 13px;
+  color: $gray-text;
+  margin: 0;
+  direction: rtl;
+}
+
+// ── Steps bar ─────────────────────────────────────────────
+.steps-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 2rem;
+  padding: 1rem 1.25rem;
+  background: $gray-bg;
+  border-radius: 12px;
+  border: 0.5px solid $gray-border;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: $gray-text;
+
+  .step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #D3D1C7;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  &.step-done {
+    color: #1a1a18;
+    font-weight: 500;
+
+    .step-num {
+      background: $blue;
+    }
+  }
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: #D3D1C7;
+  margin: 0 10px;
+  transition: background 0.3s;
+
+  &.line-done {
+    background: $blue;
+  }
+}
+
+// ── Body ──────────────────────────────────────────────────
+.iltizam-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// ── Loading ───────────────────────────────────────────────
+.iltizam-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  gap: 12px;
+  color: $gray-text;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid $gray-border;
+  border-top-color: $blue;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Doc card ──────────────────────────────────────────────
+.doc-card {
+  background: #fff;
+  border: 0.5px solid $gray-border;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.doc-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1rem 1.25rem;
+  background: $blue-light;
+  border-bottom: 0.5px solid darken($blue-light, 8%);
+
+  svg {
+    stroke: $blue;
+    flex-shrink: 0;
+  }
+
+  .doc-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #0C447C;
+    margin: 0 0 2px;
+  }
+
+  .doc-meta {
+    font-size: 12px;
+    color: #185FA5;
+    margin: 0;
+  }
+}
+
+// ── Document preview ──────────────────────────────────────
+.doc-preview {
+  padding: 1.5rem 1.75rem;
+  font-size: 15px;
+  line-height: 1.9;
+  color: #2C2C2A;
+  border-bottom: 0.5px solid $gray-border;
+
+  p {
+    margin: 0 0 1rem;
+  }
+
+  .doc-bismillah {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 500;
+    color: #0C447C;
+    margin-bottom: 1.25rem;
+  }
+
+  .doc-subtitle {
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 0.5rem;
+  }
+
+  .doc-conclusion {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: $red-light;
+    border-left: 3px solid $red;
+    border-radius: 6px;
+    font-size: 14px;
+    color: $red;
+  }
+}
+
+.doc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .bullet-icon {
+    color: $blue;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}
+
+// ── Doc actions ───────────────────────────────────────────
+.doc-actions {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-consult {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: $blue;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: fit-content;
+
+  &:hover {
+    background: darken($blue, 8%);
+  }
+
+  &.btn-consulted {
+    background: $green;
+    cursor: default;
+
+    &:hover {
+      background: $green;
+    }
+  }
+}
+
+.consult-hint {
+  font-size: 12px;
+  color: $gray-text;
+
+  &.success {
+    color: $green-mid;
+    font-weight: 500;
+  }
+}
+
+// ── Accept card ───────────────────────────────────────────
+.accept-card {
+  background: #fff;
+  border: 0.5px solid $gray-border;
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  &.accept-card-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  &.accept-card-active {
+    border-color: $blue-mid;
+    box-shadow: 0 0 0 3px rgba($blue, 0.08);
+  }
+}
+
+.accept-lock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: $gray-text;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: $gray-bg;
+  border-radius: 8px;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.accept-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+
+  &.disabled {
+    cursor: not-allowed;
+  }
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: $blue;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.accept-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a18;
+  }
+
+  span {
+    font-size: 13px;
+    color: $gray-text;
+    line-height: 1.6;
+  }
+}
+
+// ── Confirm section ───────────────────────────────────────
+.confirm-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #D3D1C7;
+  color: #888;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: not-allowed;
+  transition: background 0.25s, color 0.25s;
+
+  &.btn-confirm-ready {
+    background: $blue;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+      background: darken($blue, 8%);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+.confirm-hint {
+  font-size: 13px;
+  color: $gray-text;
+  margin: 0;
+
+  &.success {
+    color: $green-mid;
+    font-weight: 500;
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────
+@media (max-width: 600px) {
+  .iltizam-page {
+    padding: 1rem 1rem 3rem;
+  }
+
+  .steps-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .step-line {
+    width: 2px;
+    height: 20px;
+    margin: 0 12px;
+  }
+
+  .doc-preview {
+    padding: 1rem;
+    font-size: 14px;
+  }
+}

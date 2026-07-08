@@ -1,0 +1,477 @@
+<main class="dashboard">
+
+  <!-- HEADER BANNER -->
+  <div class="welcome-banner">
+    <div class="welcome-text">
+      <span class="welcome-greeting">Bonjour 👋</span>
+      <h1>Chahlaoui Aziz</h1>
+      <p class="welcome-sub">Bienvenue sur votre espace <strong>Tunisie Telecom</strong></p>
+    </div>
+    <div class="welcome-meta">
+      <div class="meta-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Mardi 24 février 2026
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat-card stat-blue">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ campagnes.length }}</span>
+        <span class="stat-label">Campagnes actives</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-purple">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">0</span>
+        <span class="stat-label">Mon candidature</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-green">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">0</span>
+        <span class="stat-label">Acceptées</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT GRID -->
+  <div class="content-grid">
+
+    <!-- LEFT: CAMPAGNES -->
+    <section class="campagnes-section">
+      <div class="section-header">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12 19.79 19.79 0 0 1 1.95 3.4 2 2 0 0 1 3.93 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          Campagnes de recrutement
+        </h2>
+        <span class="badge-count">{{ campagnes.length }}</span>
+      </div>
+
+      <div *ngIf="campagnes.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <p>Aucune campagne disponible pour le moment.</p>
+      </div>
+
+      <div *ngFor="let c of campagnes; let i = index" class="campagne-item" [style.animation-delay]="i * 80 + 'ms'">
+        <div class="campagne-avatar">
+          <svg viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="15" width="14" height="38" stroke="white" stroke-width="2" fill="none"/>
+            <rect x="8" y="19" width="3" height="3" fill="white"/>
+            <rect x="13" y="19" width="3" height="3" fill="white"/>
+            <rect x="8" y="26" width="3" height="3" fill="white"/>
+            <rect x="13" y="26" width="3" height="3" fill="white"/>
+            <rect x="22" y="5" width="16" height="48" stroke="white" stroke-width="2" fill="none"/>
+            <rect x="25" y="10" width="3" height="3" fill="white"/>
+            <rect x="32" y="10" width="3" height="3" fill="white"/>
+            <rect x="25" y="18" width="3" height="3" fill="white"/>
+            <rect x="32" y="18" width="3" height="3" fill="white"/>
+            <polyline points="42,30 55,18 68,30" stroke="white" stroke-width="2" fill="none"/>
+            <rect x="44" y="30" width="22" height="23" stroke="white" stroke-width="2" fill="none"/>
+            <rect x="47" y="34" width="5" height="5" stroke="white" stroke-width="1.5" fill="none"/>
+            <rect x="58" y="34" width="5" height="5" stroke="white" stroke-width="1.5" fill="none"/>
+            <rect x="52" y="42" width="6" height="11" stroke="white" stroke-width="1.5" fill="none"/>
+            <line x1="2" y1="53" x2="75" y2="53" stroke="white" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <div class="campagne-body">
+          <div class="campagne-top">
+            <h3>{{ c.libelle }}</h3>
+            <span class="status-pill" [ngClass]="'status-' + (c.statut | lowercase)">{{ c.statut }}</span>
+          </div>
+          <p class="campagne-desc">{{ c.description || 'Pas de description disponible' }}</p>
+          <div class="campagne-dates">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/>
+                <line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/>
+              </svg>
+              Début : {{ c.dateDebut | date:'dd/MM/yyyy' }}
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Fin : {{ c.dateFin | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+<div class="campagne-actions" *ngIf="c.statut === 'ACTIVE'">
+  
+  <button class="btn-primary" (click)="deposerCandidature(c.id)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+    Déposer candidature
+  </button>
+
+  <button *ngIf="isRH()" class="btn-secondary" (click)="ouvrirPageSaisonniers(c.id)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="8.5" cy="7" r="4"/>
+      <line x1="20" y1="8" x2="20" y2="14"/>
+      <line x1="23" y1="11" x2="17" y2="11"/>
+    </svg>
+    Consulter votre espace RH
+  </button>
+
+</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- Campagne highlight -->
+
+
+      <!-- Guide rapide -->
+      <div class="guide-card">
+        <h4>Comment postuler ?</h4>
+        <ol class="guide-steps">
+          <li>
+            <span class="step-num">1</span>
+            <span>Choisissez une campagne active</span>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <span>Cliquez sur « Déposer candidature »</span>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <span>Remplissez le formulaire</span>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <span>Joignez vos documents (CIN, diplôme, contrat)</span>
+          </li>
+        </ol>
+      </div>
+
+    </aside>
+  </div>
+</main>
+
+<!-- ===================== MODAL ===================== -->
+<div class="modal-overlay" *ngIf="showCandidatureModal" (click)="closeModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <div class="modal-head">
+      <div class="modal-title-group">
+        <div class="modal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div>
+          <h2>Déposer une candidature</h2>
+          <p>Remplissez les informations ci-dessous</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form #candidatureForm="ngForm" (ngSubmit)="submitCandidature(candidatureForm)" class="modal-form">
+
+      <div class="form-grid">
+
+        <!-- Prénom -->
+        <div class="field">
+          <label>Prénom *</label>
+          <input type="text" [(ngModel)]="form.prenom" name="prenom"
+                 #prenom="ngModel" required placeholder="Votre prénom"
+                 [class.input-error]="prenom.invalid && prenom.touched">
+          <small class="error-msg" *ngIf="prenom.touched && prenom.errors?.['required']">
+            ⚠️ Le prénom est obligatoire.
+          </small>
+        </div>
+
+        <!-- Nom -->
+        <div class="field">
+          <label>Nom *</label>
+          <input type="text" [(ngModel)]="form.nom" name="nom"
+                 #nom="ngModel" required placeholder="Votre nom"
+                 [class.input-error]="nom.invalid && nom.touched">
+          <small class="error-msg" *ngIf="nom.touched && nom.errors?.['required']">
+            ⚠️ Le nom est obligatoire.
+          </small>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label>Email *</label>
+          <input type="email" [(ngModel)]="form.email" name="email"
+                 #email="ngModel" required email placeholder="email@exemple.com"
+                 [class.input-error]="email.invalid && email.touched">
+          <small class="error-msg" *ngIf="email.touched && email.errors?.['required']">
+            ⚠️ L'email est obligatoire.
+          </small>
+          <small class="error-msg" *ngIf="email.touched && email.errors?.['email']">
+            ⚠️ Format d'email invalide.
+          </small>
+        </div>
+
+        <!-- Téléphone -->
+        <div class="field">
+          <label>Téléphone *</label>
+          <input type="text" [(ngModel)]="form.telephone" name="telephone"
+                 #telephone="ngModel" required pattern="^\d{8}$" placeholder="XX XXX XXX"
+                 [class.input-error]="telephone.invalid && telephone.touched">
+          <small class="error-msg" *ngIf="telephone.touched && telephone.errors?.['required']">
+            ⚠️ Le téléphone est obligatoire.
+          </small>
+          <small class="error-msg" *ngIf="telephone.touched && telephone.errors?.['pattern']">
+            ⚠️ Le téléphone doit contenir exactement 8 chiffres.
+          </small>
+        </div>
+
+        <!-- CIN -->
+        <div class="field">
+          <label>CIN *</label>
+          <input type="text" [(ngModel)]="form.cin" name="cin"
+                 #cin="ngModel" required pattern="^\d{8}$" placeholder="Numéro CIN"
+                 [class.input-error]="cin.invalid && cin.touched">
+          <small class="error-msg" *ngIf="cin.touched && cin.errors?.['required']">
+            ⚠️ Le CIN est obligatoire.
+          </small>
+          <small class="error-msg" *ngIf="cin.touched && cin.errors?.['pattern']">
+            ⚠️ Le CIN doit contenir exactement 8 chiffres.
+          </small>
+        </div>
+
+        <!-- RIB -->
+        <div class="field">
+          <label>RIB *</label>
+          <input type="text" [(ngModel)]="form.rib" name="rib"
+                 #rib="ngModel" required pattern="^\d{20}$" placeholder="Votre RIB bancaire"
+                 [class.input-error]="rib.invalid && rib.touched">
+          <small class="error-msg" *ngIf="rib.touched && rib.errors?.['required']">
+            ⚠️ Le RIB est obligatoire.
+          </small>
+          <small class="error-msg" *ngIf="rib.touched && rib.errors?.['pattern']">
+            ⚠️ Le RIB doit contenir exactement 20 chiffres.
+          </small>
+        </div>
+
+      </div>
+
+      <!-- ====== Informations du parent ====== -->
+      <h4 class="section-title">Informations du parent</h4>
+      <div class="form-grid">
+
+        <div class="field">
+          <label>Nom & Prénom du parent</label>
+          <input type="text" [(ngModel)]="form.nomPrenomParent" name="nomPrenomParent"
+                 placeholder="Nom et prénom du parent">
+        </div>
+
+        <div class="field">
+          <label>Matricule du parent</label>
+          <input type="text" [(ngModel)]="form.matriculeParent" name="matriculeParent"
+                 placeholder="Matricule du parent">
+        </div>
+
+      </div>
+
+      <!-- ====== Formation ====== -->
+      <h4 class="section-title">Formation</h4>
+      <div class="form-grid">
+
+        <div class="field">
+          <label>Niveau d'étude</label>
+          <select [(ngModel)]="form.niveauEtude" name="niveauEtude">
+            <option value="" disabled selected>Choisir le niveau</option>
+            <option value="BAC">Bac</option>
+            <option value="BAC+1">Bac+1</option>
+            <option value="BAC+2">Bac+2</option>
+            <option value="BAC+3">Bac+3</option>
+            <option value="BAC+4">Bac+4</option>
+            <option value="BAC+5">Bac+5</option>
+            <option value="BAC+6">Bac+6</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Diplôme</label>
+          <select [(ngModel)]="form.diplomeNom" name="diplomeNom">
+            <option value="" disabled selected>Choisir le diplôme</option>
+            <option value="BTP">BTP</option>
+            <option value="BTS">BTS</option>
+            <option value="LICENCE">Licence</option>
+            <option value="MASTER">Master</option>
+            <option value="DOCTORAT">Doctorat</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Spécialité Diplôme</label>
+          <input type="text" [(ngModel)]="form.specialiteDiplome" name="specialiteDiplome"
+                 placeholder="Votre spécialité">
+        </div>
+
+      </div>
+
+      <!-- ====== Affectation ====== -->
+      <h4 class="section-title">Affectation</h4>
+      <div class="form-grid">
+
+        <!-- Direction -->
+        <div class="field">
+          <label>Directions d'affectation *</label>
+          <select [(ngModel)]="form.regionId" name="regionId"
+                  #regionId="ngModel" required
+                  (ngModelChange)="loadStructuresByRegion($event)"
+                  [class.input-error]="regionId.invalid && regionId.touched">
+            <option value="" disabled selected>Choisir la direction</option>
+            <option *ngFor="let region of regions" [value]="region.id">{{ region.nom }}</option>
+          </select>
+          <small class="error-msg" *ngIf="regionId.touched && regionId.errors?.['required']">
+            ⚠️ La direction est obligatoire.
+          </small>
+        </div>
+
+        <!-- Structure -->
+        <div class="field">
+          <label>Structure *</label>
+          <select [(ngModel)]="form.structureId" name="structureId"
+                  #structureId="ngModel" required
+                  [class.input-error]="structureId.invalid && structureId.touched">
+            <option value="" disabled selected>Choisir une structure</option>
+
+            <optgroup label="🏪 Espaces Commerciaux" *ngIf="structuresEC.length > 0">
+              <option *ngFor="let s of structuresEC"
+                      [value]="s.id"
+                      [disabled]="!s.disponible">
+                {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
+                {{ s.disponible ? '' : '⛔ COMPLET' }}
+              </option>
+            </optgroup>
+
+            <optgroup label="💻 Centres Technologiques" *ngIf="structuresCT.length > 0">
+              <option *ngFor="let s of structuresCT"
+                      [value]="s.id"
+                      [disabled]="!s.disponible">
+                {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
+                {{ s.disponible ? '' : '⛔ COMPLET' }}
+              </option>
+            </optgroup>
+          </select>
+
+          <small class="error-msg" *ngIf="structureId.touched && structureId.errors?.['required']">
+            ⚠️ La structure est obligatoire.
+          </small>
+          <small style="color:#e74c3c" *ngIf="toutesCompletes">
+            ⚠️ Toutes les structures de cette région sont complètes.
+          </small>
+          <small style="color:#999" *ngIf="form.regionId && structures.length === 0">
+            Aucune structure trouvée pour cette région.
+          </small>
+        </div>
+
+      </div>
+
+      <!-- ====== Documents requis ====== -->
+      <div class="files-section">
+        <h4>Documents requis</h4>
+        <div class="files-grid">
+
+          <label class="file-drop" [class.file-error]="formSubmitted && !cinFile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <span>CIN (PDF)</span>
+            <small *ngIf="cinFileName" class="file-name">{{ cinFileName }}</small>
+            <small class="error-msg" *ngIf="formSubmitted && !cinFile">⚠️ Fichier CIN obligatoire.</small>
+            <input type="file" accept=".pdf" (change)="onFileChange($event,'cin')">
+          </label>
+
+          <label class="file-drop" [class.file-error]="formSubmitted && !diplome">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+            <span>Diplôme (PDF)</span>
+            <small *ngIf="diplomeFileName" class="file-name">{{ diplomeFileName }}</small>
+            <small class="error-msg" *ngIf="formSubmitted && !diplome">⚠️ Fichier Diplôme obligatoire.</small>
+            <input type="file" accept=".pdf" (change)="onFileChange($event,'diplome')">
+          </label>
+
+          <label class="file-drop" [class.file-error]="formSubmitted && !contrat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            <span>Contrat (PDF)</span>
+            <small *ngIf="contratFileName" class="file-name">{{ contratFileName }}</small>
+            <small class="error-msg" *ngIf="formSubmitted && !contrat">⚠️ Fichier Contrat obligatoire.</small>
+            <input type="file" accept=".pdf" (change)="onFileChange($event,'contrat')">
+          </label>
+
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="btn-send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          Envoyer la candidature
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- ASSISTANCE -->
+<button class="fab-assistance">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+    <line x1="12" y1="17" x2="12.01" y2="17"/>
+  </svg>
+  Assistance
+</button>

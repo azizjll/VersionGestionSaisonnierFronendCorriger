@@ -1,0 +1,29 @@
+<div class="slider-wrapper">
+
+  <!-- Slides -->
+  <div class="slider-track">
+    <div
+      *ngFor="let slide of slides; let i = index"
+      class="slide"
+      [class.active]="i === currentIndex">
+      <img [src]="slide.image" [alt]="slide.alt" />
+    </div>
+  </div>
+
+  <!-- Bouton gauche -->
+  <button class="arrow arrow-left" (click)="prev()">&#8249;</button>
+
+  <!-- Bouton droite -->
+  <button class="arrow arrow-right" (click)="next()">&#8250;</button>
+
+  <!-- Dots de navigation -->
+  <div class="dots">
+    <span
+      *ngFor="let slide of slides; let i = index"
+      class="dot"
+      [class.active]="i === currentIndex"
+      (click)="goTo(i)">
+    </span>
+  </div>
+
+</div>

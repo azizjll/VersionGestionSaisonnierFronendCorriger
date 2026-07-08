@@ -1,0 +1,183 @@
+<div class="iltizam-page">
+
+  <!-- ── En-tête ── -->
+  <div class="iltizam-header">
+    <button class="btn-back" (click)="retourEspace()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Retour
+    </button>
+
+    <div class="header-title">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M9 11l3 3L22 4"/>
+          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+        </svg>
+      </div>
+      <div>
+        <h1>إلتزام - عمل موسمي</h1>
+        <p>يرجى الاطلاع على وثيقة الالتزام قبل إيداع الترشح</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Étapes ── -->
+  <div class="steps-bar">
+    <div class="step" [class.step-done]="true">
+      <div class="step-num">1</div>
+      <span>Consulter le document</span>
+    </div>
+    <div class="step-line" [class.line-done]="hasRead"></div>
+    <div class="step" [class.step-done]="hasRead">
+      <div class="step-num">2</div>
+      <span>Accepter les règles</span>
+    </div>
+    <div class="step-line" [class.line-done]="accepted"></div>
+    <div class="step" [class.step-done]="accepted">
+      <div class="step-num">3</div>
+      <span>Déposer la candidature</span>
+    </div>
+  </div>
+
+  <!-- ── Contenu principal ── -->
+  <div class="iltizam-body">
+
+    <!-- Loader -->
+    <div class="iltizam-loading" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Chargement du document...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+
+      <!-- ── Bloc document ── -->
+      <div class="doc-card">
+        <div class="doc-card-header">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <div>
+            <p class="doc-title">{{ iltizamDoc?.nom || 'إلتزام - عمل موسمي' }}</p>
+            <p class="doc-meta">Document officiel — Tunisie Telecom</p>
+          </div>
+        </div>
+
+        <!-- Aperçu texte du document -->
+        <div class="doc-preview" dir="rtl">
+          <p class="doc-bismillah">بسم الله الرحمن الرحيم</p>
+
+          <p>
+            بصفتي عون موسمي لمدة شهر يتم تحديده من طرف مصالح الشركة الوطنية للاتصالات،
+            مقابل منحة شهرية بمائة وأربعون ألف (<strong>240.000</strong>) دينارا،
+            وفق الإجراءات القانونية المعمول بها بالشركة الوطنية للاتصالات.
+          </p>
+
+          <p class="doc-subtitle">أُلتزم بـ :</p>
+
+          <ul class="doc-list">
+            <li>
+              <span class="bullet-icon">◈</span>
+              احترام الإجراءات القانونية المعمول بها بالشركة الوطنية للاتصالات
+            </li>
+            <li>
+              <span class="bullet-icon">◈</span>
+              احترام توقيت التربص الذي يحدده المدير / المدير الجهوي
+            </li>
+            <li>
+              <span class="bullet-icon">◈</span>
+              الظهور بمظهر لائق وحسن السلوك
+            </li>
+            <li>
+              <span class="bullet-icon">◈</span>
+              احترام التسلسل الإداري
+            </li>
+            <li>
+              <span class="bullet-icon">◈</span>
+              الاضطلاع بالمهام الموكولة إليّ بكل إخلاص وتفانٍ
+            </li>
+          </ul>
+
+          <p class="doc-conclusion">
+            كما أعترف بحق الإدارة في إنهاء مدة التربص المذكورة في صورة إخلالي بهذا الالتزام.
+          </p>
+        </div>
+
+        <!-- Bouton consulter PDF -->
+        <div class="doc-actions">
+          <button class="btn-consult" (click)="ouvrirDocument()" [class.btn-consulted]="hasRead">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span *ngIf="!hasRead">Consulter le document PDF complet</span>
+            <span *ngIf="hasRead">Document consulté ✓</span>
+          </button>
+
+          <small class="consult-hint" *ngIf="!hasRead">
+            Cliquez pour ouvrir le document officiel — la case d'acceptation sera activée ensuite.
+          </small>
+          <small class="consult-hint success" *ngIf="hasRead">
+            Vous pouvez maintenant cocher votre accord ci-dessous.
+          </small>
+        </div>
+      </div>
+
+      <!-- ── Bloc acceptation ── -->
+      <div class="accept-card" [class.accept-card-active]="hasRead" [class.accept-card-disabled]="!hasRead">
+
+        <div class="accept-lock" *ngIf="!hasRead">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+          <span>Consultez d'abord le document pour activer cette section</span>
+        </div>
+
+        <label class="accept-label" [class.disabled]="!hasRead">
+          <input
+            type="checkbox"
+            [(ngModel)]="accepted"
+            [disabled]="!hasRead"
+          />
+          <div class="accept-text">
+            <strong>J'ai lu et j'accepte les termes de l'إلتزام - عمل موسمي</strong>
+            <span>
+              Je m'engage à respecter toutes les règles mentionnées dans le document officiel
+              de la Tunisie Telecom concernant le travail saisonnier.
+            </span>
+          </div>
+        </label>
+      </div>
+
+      <!-- ── Bouton confirmer ── -->
+      <div class="confirm-section">
+        <button
+          class="btn-confirm"
+          [disabled]="!accepted"
+          [class.btn-confirm-ready]="accepted"
+          (click)="confirmerEtRetourner()"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          Confirmer et déposer ma candidature
+        </button>
+
+        <p class="confirm-hint" *ngIf="!hasRead">
+          Étape 1 — Consultez le document PDF pour continuer.
+        </p>
+        <p class="confirm-hint" *ngIf="hasRead && !accepted">
+          Étape 2 — Cochez la case d'acceptation pour continuer.
+        </p>
+        <p class="confirm-hint success" *ngIf="accepted">
+          Tout est prêt ! Cliquez pour accéder au formulaire de candidature.
+        </p>
+      </div>
+
+    </ng-container>
+  </div>
+</div>

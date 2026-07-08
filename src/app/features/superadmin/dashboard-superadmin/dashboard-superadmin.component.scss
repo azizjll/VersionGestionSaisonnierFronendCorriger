@@ -1,0 +1,186 @@
+.audit-page {
+  padding: 24px;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+/* HEADER */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+  }
+
+  p {
+    color: #64748b;
+    margin: 0;
+  }
+}
+
+.stats-card {
+  background: white;
+  padding: 18px 24px;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .stats-number {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0ea5e9;
+  }
+
+  .stats-label {
+    font-size: 13px;
+    color: #64748b;
+  }
+}
+
+/* FILTERS */
+
+.filters-card {
+  background: white;
+  padding: 22px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 250px;
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  input,
+  select {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+
+    &:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+    }
+  }
+}
+
+/* TABLE */
+
+.table-card {
+  background: white;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #0f172a;
+
+  th {
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    padding: 16px;
+  }
+}
+
+tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: 0.2s;
+
+  &:hover {
+    background: #f8fafc;
+  }
+}
+
+tbody td {
+  padding: 16px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.email-cell {
+  font-weight: 600;
+}
+
+/* ACTION BADGES */
+
+.action-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-block;
+}
+
+.create {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.update {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.delete {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.activer {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.cloturer {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+/* STATUS */
+
+.status {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.success {
+  color: #16a34a;
+}
+
+.error {
+  color: #dc2626;
+}

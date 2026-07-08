@@ -1,0 +1,104 @@
+<div class="audit-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2>Journal d'audit</h2>
+      <p>Historique des actions effectuées dans le système</p>
+    </div>
+
+    <div class="stats-card">
+      <span class="stats-number">{{ filteredLogs.length }}</span>
+      <span class="stats-label">Logs</span>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-card">
+
+    <div class="filter-group">
+      <label for="searchEmail">Email utilisateur</label>
+
+      <div class="input-wrapper">
+        <input
+          type="text" id ="searchEmail"
+          placeholder="Rechercher par email..."
+          [(ngModel)]="searchEmail"
+          (input)="filtrer()">
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label for="searchAction">Action</label>
+
+      <select  id="searchAction" [(ngModel)]="searchAction" (change)="filtrer()">
+        <option value="">Toutes</option>
+        <option value="CREATE">CREATE</option>
+        <option value="UPDATE">UPDATE</option>
+        <option value="DELETE">DELETE</option>
+        <option value="ACTIVER">ACTIVER</option>
+        <option value="CLOTURER">CLOTURER</option>
+      </select>
+    </div>
+
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card">
+
+    <table>
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Utilisateur</th>
+        <th>Action</th>
+        <th>Entité</th>
+        <th>ID</th>
+        <th>Adresse IP</th>
+        <th>Statut</th>
+      </tr>
+      </thead>
+
+      <tbody>
+
+      <tr *ngFor="let log of filteredLogs">
+
+        <td>
+          {{ log.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}
+        </td>
+
+        <td class="email-cell">
+          {{ log.utilisateurEmail }}
+        </td>
+
+        <td>
+          <span class="action-badge"
+                [ngClass]="log.action.toLowerCase()">
+            {{ log.action }}
+          </span>
+        </td>
+
+        <td>{{ log.entite }}</td>
+
+        <td>#{{ log.entiteId }}</td>
+
+        <td>{{ log.adresseIp }}</td>
+
+        <td>
+          <span
+            class="status"
+            [ngClass]="log.statut === 'SUCCESS' ? 'success' : 'error'">
+
+            {{ log.statut }}
+
+          </span>
+        </td>
+
+      </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

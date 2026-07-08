@@ -1,0 +1,66 @@
+.expire-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f8ff, #e0f2ff);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.expire-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(30, 139, 212, 0.15);
+  max-width: 420px;
+  width: 90%;
+  animation: fadeIn 0.5s ease;
+}
+
+.icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.expire-card h1 {
+  font-size: 24px;
+  color: #1E3A5F;
+  margin-bottom: 10px;
+}
+
+.expire-card p {
+  font-size: 14px;
+  color: #2C5F8A;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+// ✅ Après — assombrir le dégradé
+.btn-return {
+  background: linear-gradient(135deg, #1266a8, #1a85bf);
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-return:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 139, 212, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

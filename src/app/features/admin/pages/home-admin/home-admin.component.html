@@ -1,0 +1,3019 @@
+<!-- directeur-general-dashboard.component.html -->
+<div class="dg-wrapper">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.open]="sidebarOpen">
+  <div class="sidebar-logo"></div>
+
+  <nav class="sidebar-nav">
+
+    <!-- CAMPAGNES : groupe dropdown -->
+    <div class="nav-group">
+      <a class="nav-item nav-group-toggle"
+         [class.active]="activeSection === 'campagnes' || activeSection === 'memo' || activeSection === 'structures' || campagnesOpen"
+         (click)="toggleCampagnes()">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3h18v18H3z"/><path d="M8 12h8M12 8v8"/>
+          </svg>
+        </span>
+        <span>Campagnes</span>
+        <span class="nav-chevron" [class.open]="campagnesOpen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </a>
+
+      <div class="nav-submenu" [class.open]="campagnesOpen">
+
+  <!-- Toutes les campagnes -->
+  <a class="nav-item nav-sub-item"
+     [class.active]="activeSection === 'campagnes'"
+     (click)="setActive('campagnes')">
+    <span class="nav-sub-dot"></span>
+    <span>Toutes les campagnes</span>
+  </a>
+
+  <!-- CAS 1 : campagne active → cliquable pour ouvrir/fermer ses sous-items -->
+  <ng-container *ngIf="campagneActive as ca">
+
+    <div class="nav-active-campagne-label nav-item nav-sub-item"
+     [class.open]="campagneDetailOpen"
+     (click)="toggleCampagneDetail()"
+     [title]="ca.nom">
+
+  <span class="active-dot"></span>
+
+  <span class="campagne-label-content">
+    <span class="campagne-badge">ACTIVE</span>
+<span class="campagne-nom">{{ ca.nom }}</span>
+  </span>
+
+  <span class="nav-chevron" [class.open]="campagneDetailOpen">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </span>
+</div>
+
+    <!-- Sous-items de la campagne active, visibles si campagneDetailOpen -->
+    <div class="nav-submenu nav-sub-level" [class.open]="campagneDetailOpen">
+
+      <a class="nav-item nav-sub-item nav-sub-child"
+         [class.active]="activeSection === 'memo'"
+         (click)="setActive('memo')">
+        <span class="nav-sub-dot"></span>
+        <span>مذكرة الإنتداب</span>
+      </a>
+
+      <a class="nav-item nav-sub-item nav-sub-child"
+         [class.active]="activeSection === 'structures'"
+         (click)="setActive('structures')">
+        <span class="nav-sub-dot"></span>
+        <span>Structures d'affectation</span>
+      </a>
+
+      <a class="nav-item nav-sub-item nav-sub-child"
+         [class.active]="activeSection === 'candidatures'"
+         (click)="setActive('candidatures')">
+        <span class="nav-sub-dot"></span>
+        <span>Candidatures</span>
+        <span class="nav-badge secondary">{{ stats.totalCandidatures }}</span>
+      </a>
+
+      <a class="nav-item nav-sub-item nav-sub-child"
+         [class.active]="activeSection === 'presence'"
+         (click)="setActive('presence')">
+        <span class="nav-sub-dot"></span>
+        <span>Présence & Paiement</span>
+        <span class="nav-badge secondary">{{ presenceStats.totalSaisonniers }}</span>
+      </a>
+
+      <a class="nav-item nav-sub-item nav-sub-child"
+         [class.active]="activeSection === 'parents'"
+         (click)="setActive('parents')">
+        <span class="nav-sub-dot"></span>
+        <span>Parents Autorisés</span>
+        <span class="nav-badge secondary">{{ stats.totalParents }}</span>
+      </a>
+
+      <a class="nav-item nav-sub-item nav-sub-child"
+         [class.active]="activeSection === 'etats'"
+         (click)="setActive('etats')">
+        <span class="nav-sub-dot"></span>
+        <span>États RH Régionaux</span>
+        <span class="nav-badge secondary">{{ etatsRH.length }}</span>
+      </a>
+
+    </div>
+
+  </ng-container>
+
+  <!-- CAS 2 : aucune campagne active -->
+  <!-- CAS 2 : aucune campagne active -->
+<ng-container *ngIf="!campagneActive">
+
+  <div class="nav-active-campagne-label nav-item nav-sub-item"
+       [class.open]="campagneDetailOpen"
+       (click)="toggleCampagneDetail()">
+
+    <span class="active-dot inactive"></span>
+
+    <span class="campagne-label-content">
+      <span class="campagne-badge inactive">INACTIVE</span>
+      <span class="campagne-nom muted">Aucune campagne active actuellement</span>
+    </span>
+
+    <span class="nav-chevron" [class.open]="campagneDetailOpen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </span>
+  </div>
+
+  <!-- Sous-sections toujours accessibles -->
+  <div class="nav-submenu nav-sub-level" [class.open]="campagneDetailOpen">
+
+    <a class="nav-item nav-sub-item nav-sub-child"
+       [class.active]="activeSection === 'memo'"
+       (click)="setActive('memo')">
+      <span class="nav-sub-dot"></span>
+      <span>مذكرة الإنتداب</span>
+    </a>
+
+    <a class="nav-item nav-sub-item nav-sub-child"
+       [class.active]="activeSection === 'structures'"
+       (click)="setActive('structures')">
+      <span class="nav-sub-dot"></span>
+      <span>Structures d'affectation</span>
+    </a>
+
+    <a class="nav-item nav-sub-item nav-sub-child"
+       [class.active]="activeSection === 'candidatures'"
+       (click)="setActive('candidatures')">
+      <span class="nav-sub-dot"></span>
+      <span>Candidatures</span>
+    </a>
+
+    <a class="nav-item nav-sub-item nav-sub-child"
+       [class.active]="activeSection === 'presence'"
+       (click)="setActive('presence')">
+      <span class="nav-sub-dot"></span>
+      <span>Présence & Paiement</span>
+    </a>
+
+    <a class="nav-item nav-sub-item nav-sub-child"
+       [class.active]="activeSection === 'parents'"
+       (click)="setActive('parents')">
+      <span class="nav-sub-dot"></span>
+      <span>Parents Autorisés</span>
+    </a>
+
+    <a class="nav-item nav-sub-item nav-sub-child"
+       [class.active]="activeSection === 'etats'"
+       (click)="setActive('etats')">
+      <span class="nav-sub-dot"></span>
+      <span>États RH Régionaux</span>
+    </a>
+
+  </div>
+
+</ng-container>
+
+</div>
+    </div>
+
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="user-avatar">{{ nomUtilisateur | slice:0:2 | uppercase }}</div>
+    <div class="user-info">
+      <span class="user-name">{{ nomUtilisateur }}</span>
+      <span class="user-role">{{ roleUtilisateur }}</span>
+    </div>
+    <button class="logout-btn" title="Déconnexion" (click)="logout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+      </svg>
+    </button>
+  </div>
+</aside>
+
+  <div class="sidebar-overlay"
+     [class.visible]="sidebarOpen"
+     (click)="closeSidebar()"
+     (keydown.escape)="closeSidebar()"
+     tabindex="0"
+     role="button"
+     aria-label="Close sidebar">
+</div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <!-- Burger button — visible seulement sur mobile/tablette via CSS -->
+      <button class="burger-btn" (click)="toggleSidebar()" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+ 
+      <div class="topbar-left">
+        <h1 class="page-title">{{ pageTitle }}</h1>
+        <p class="page-subtitle">{{ pageSubtitle }}</p>
+      </div>
+    </div>
+ 
+    
+  </header>
+
+  <!-- ===== SECTION: PARENTS AUTORISÉS ===== -->
+<section class="content-section" *ngIf="activeSection === 'parents'">
+
+  <div class="section-header">
+    <h2 class="section-title">Parents Autorisés</h2>
+    <div class="action-buttons">
+      <button class="btn btn-primary" (click)="openAddParentModal()">
+        + Ajouter Parent
+      </button>
+    </div>
+  </div>
+
+  <!-- Dropdown sélection campagne -->
+  <div class="table-card" style="margin-bottom: 16px;">
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding: 4px 0;">
+      
+      <div style="display:flex; flex-direction:column; gap:4px; min-width:280px;">
+        <label style="font-size:11px; color:var(--text-muted); font-weight:500; 
+                      text-transform:uppercase; letter-spacing:0.05em;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               style="width:11px;height:11px; margin-right:4px; vertical-align:middle">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Campagne
+        </label>
+        <select [(ngModel)]="selectedCampagne"
+                [ngModelOptions]="{standalone: true}"
+                (ngModelChange)="voirParentsCampagne($event)"
+                style="background:var(--surface-2); border:1px solid var(--border-color, rgba(255,255,255,0.1)); 
+                       border-radius:6px; padding:8px 12px; font-size:13px; color:var(--text-primary); cursor:pointer;">
+          <option [ngValue]="null">— Choisir une campagne —</option>
+          <option *ngFor="let c of campagnes" [ngValue]="c">
+            {{ c.nom }}
+            <ng-container *ngIf="c.statut === 'active'"> ✅</ng-container>
+          </option>
+        </select>
+      </div>
+
+      <!-- Badge statut campagne sélectionnée -->
+      <div *ngIf="selectedCampagne" style="align-self:flex-end; padding-bottom:4px;">
+        <span class="status-badge" [ngClass]="selectedCampagne.statut">
+          {{ selectedCampagne.statutLabel }}
+        </span>
+      </div>
+
+      <!-- Compteur parents -->
+      <div *ngIf="selectedCampagne" 
+           style="align-self:flex-end; font-size:12px; color:var(--text-muted); 
+                  padding-bottom:6px; margin-left:auto;">
+        <span style="color:var(--text-primary); font-weight:600;">{{ parents.length }}</span>
+        parent(s) autorisé(s)
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Message : aucune campagne sélectionnée -->
+  <div *ngIf="!selectedCampagne"
+       class="table-card"
+       style="text-align:center; color:var(--text-muted); padding:3rem;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+         style="width:40px;height:40px; margin-bottom:12px; opacity:0.3">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+    <p>Sélectionnez une campagne pour voir ses parents autorisés</p>
+  </div>
+
+  <!-- Tableau parents -->
+  <div class="table-card" *ngIf="selectedCampagne">
+
+    <!-- Barre recherche -->
+    <div style="display:flex; justify-content:space-between; align-items:center; 
+                margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+      <div class="search-bar">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text"
+               [(ngModel)]="parentSearch"
+               placeholder="Rechercher par nom ou matricule..."/>
+      </div>
+    </div>
+
+    <!-- Vide -->
+    <div *ngIf="parents.length === 0 && !parentSearch"
+         style="text-align:center; color:var(--text-muted); padding:2rem;">
+      Aucun parent autorisé pour cette campagne
+    </div>
+
+    <!-- Table -->
+    <table class="data-table" *ngIf="parents.length > 0 || parentSearch">
+      <thead>
+        <tr>
+          <th>Nom & Prénom</th>
+          <th>Matricule</th>
+          <th>Utilisations</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of parentsPagines">
+          <td>{{ p.nomPrenom }}</td>
+          <td>{{ p.matricule }}</td>
+          <td>{{ p.utilise }} / {{ p.autorises }}</td>
+          <td>
+            <span [class]="p.utilise < p.autorises ? 'status-badge success' : 'status-badge danger'">
+              {{ p.utilise < p.autorises ? 'Disponible' : 'Quota atteint' }}
+            </span>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button class="action-icon" title="Modifier"
+                      (click)="editParent(p); $event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button class="action-icon danger" title="Supprimer"
+                      (click)="deleteParent(p.id); $event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="parentsPagines.length === 0 && parentSearch">
+          <td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">
+            Aucun parent trouvé pour "{{ parentSearch }}"
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination-bar" *ngIf="parentsTotalPages > 1">
+      <span class="pagination-info">
+        {{ (parentPage - 1) * parentPageSize + 1 }}–{{ getParentPageEnd() }}
+        sur {{ filteredParents.length }}
+      </span>
+      <div class="pagination-controls">
+        <button class="page-btn" [disabled]="parentPage === 1" (click)="goToParentPage(1)">«</button>
+        <button class="page-btn" [disabled]="parentPage === 1" (click)="goToParentPage(parentPage - 1)">‹</button>
+        <ng-container *ngFor="let n of parentPageNumbers">
+          <span *ngIf="n === -1" class="page-dots">…</span>
+          <button *ngIf="n !== -1" class="page-btn" [class.active]="n === parentPage"
+                  (click)="goToParentPage(n)">{{ n }}</button>
+        </ng-container>
+        <button class="page-btn" [disabled]="parentPage === parentsTotalPages"
+                (click)="goToParentPage(parentPage + 1)">›</button>
+        <button class="page-btn" [disabled]="parentPage === parentsTotalPages"
+                (click)="goToParentPage(parentsTotalPages)">»</button>
+      </div>
+      <select class="page-size-select" [(ngModel)]="parentPageSize" (change)="parentPage = 1">
+        <option [value]="5">5 / page</option>
+        <option [value]="10">10 / page</option>
+        <option [value]="25">25 / page</option>
+      </select>
+    </div>
+
+  </div>
+
+</section>
+
+
+  <section class="content-section" *ngIf="activeSection==='etats'">
+  <div class="section-header">
+    <h2 class="section-title">États signés par Direction</h2>
+  </div>
+
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Direction (Région)</th>
+          <th>RH Responsable</th>
+          <th>Fichier</th>
+          <th>Date soumission</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of etatsRH" class="table-row">
+          <td><strong>{{ e.regionNom }}</strong></td>
+          <td>{{ e.rhNom }}</td>
+          <td>
+            <a [href]="e.url" target="_blank" class="lien-url">
+              {{ e.nomFichier }}
+            </a>
+          </td>
+          <td>{{ e.dateUpload | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>
+            <span class="status-badge"
+                  [class.active]="e.statut==='VALIDE'"
+                  [class.en-attente]="e.statut==='SOUMIS'"
+                  [class.danger]="e.statut==='REJETE'">
+              {{ e.statut }}
+            </span>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button class="action-icon" title="Valider"
+                      (click)="validerEtat(e.id)"
+                      *ngIf="e.statut !== 'VALIDE'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </button>
+              <button class="action-icon danger" title="Rejeter"
+                      (click)="rejeterEtat(e.id)"
+                      *ngIf="e.statut !== 'REJETE'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="etatsRH.length === 0">
+          <td colspan="6" style="text-align:center;padding:32px;opacity:0.5">
+            Aucun état soumis pour la campagne active
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    <!-- ===== SECTION: CAMPAGNES ===== -->
+    <section class="content-section" *ngIf="activeSection === 'campagnes'">
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+      
+        
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="stat-data">
+            <span class="stat-value">{{ stats.totalParents }}</span>
+            <span class="stat-label">Parents Autorisés</span>
+          </div>
+          
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="stat-data">
+            <span class="stat-value">{{ stats.joursRestants }}</span>
+            <span class="stat-label">Jours Restants</span>
+          </div>
+          <div class="stat-trend">Campagne en cours</div>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="section-header">
+        <h2 class="section-title">Gestion des Campagnes</h2>
+        <div class="action-buttons">
+          <button class="btn btn-outline" (click)="openCreateModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            Créer Campagne
+          </button>
+          
+
+          
+
+
+        </div>
+      </div>
+
+      <!-- Table Campagnes -->
+      <div class="table-card">
+        <div class="table-filters">
+          <button class="filter-tab active">Toutes</button>
+          <button class="filter-tab">Actives</button>
+          <button class="filter-tab">Cloturées</button>
+          <button class="filter-tab">Brouillons</button>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Campagne</th>
+              <th>Période</th>
+              <th>Statut</th>
+              <th>Candidatures</th>
+              
+              <th>Lien de candidature</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let campagne of campagnes" 
+    class="table-row"
+    [class.selected]="selectedCampagne?.id === campagne.id"
+    (click)="voirParentsCampagne(campagne)"
+    (keydown.enter)="voirParentsCampagne(campagne)"
+    (keydown.space)="voirParentsCampagne(campagne)"
+    tabindex="0"
+    role="button"
+    [attr.aria-label]="'Voir campagne ' + campagne.nom"
+    style="cursor:pointer">
+              <td>
+                <div class="campagne-name">
+                  <div class="campagne-dot" [ngClass]="campagne.statut"></div>
+                  <div>
+                    <span class="name-primary">{{ campagne.nom }}</span>
+                    <span class="name-secondary">{{ campagne.code }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="period-cell">
+                <span>{{ campagne.dateDebut }}</span>
+                <span class="period-sep">→</span>
+                <span>{{ campagne.dateFin }}</span>
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="campagne.statut">{{ campagne.statutLabel }}</span>
+              </td>
+              <td>
+                <span class="candidatures-count-badge" 
+      [class.zero]="campagne.candidatures === 0"
+      (click)="voirCandidaturesCampagne(campagne)"
+      (keydown.enter)="voirCandidaturesCampagne(campagne)"
+      (keydown.space)="voirCandidaturesCampagne(campagne, $event)"
+      tabindex="0"
+      role="button"
+      [attr.aria-label]="'Voir candidatures de ' + campagne.nom">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+         style="width:13px;height:13px">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+    </svg>
+    {{ campagne.candidatures }}
+</span>
+              </td>
+
+              <td>
+                <div class="lien-cell" *ngIf="campagne.statut === 'active' && !isCampagneExpiree(campagne)">
+                <a [href]="getCandidatureUrl(campagne)" target="_blank" class="lien-url">
+                  Espace saisonnier
+                </a>
+                  <button class="action-icon" 
+                          title="Copier le lien" 
+                          (click)="copierLien(campagne)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                  </button>
+                  <button class="action-icon" 
+                          title="Ouvrir dans un nouvel onglet" 
+                          (click)="ouvrirLien(campagne)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                      <polyline points="15 3 21 3 21 9"/>
+                      <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <span *ngIf="campagne.statut !== 'active'" class="text-muted" style="font-size:12px">
+                  — Inactive
+                </span>
+              </td>
+              
+              <td>
+                <div class="row-actions">
+                  <button class="action-icon" title="Voir" (click)="ouvrirVoirCampagne(campagne)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                  <button class="action-icon" title="Modifier" (click)="ouvrirModifierCampagne(campagne)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+<div class="table-card" style="margin-top:20px;" *ngIf="selectedCampagne">
+
+  <div class="section-header">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <h3>Parents Autorisés</h3>
+      <!-- badge nom campagne -->
+      <span class="status-badge active">{{ selectedCampagne.nom }}</span>
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <div class="search-bar">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text"
+               [(ngModel)]="parentSearch"
+               placeholder="Rechercher par nom ou matricule..."/>
+      </div>
+      <button class="btn btn-primary btn-sm" (click)="openAddParentModal()">
+        + Ajouter Parent
+      </button>
+    </div>
+  </div>
+
+  <!-- état vide : campagne sélectionnée mais chargement -->
+  <div *ngIf="parents.length === 0 && !parentSearch" 
+       style="text-align:center; color:var(--text-muted); padding:2rem;">
+    Aucun parent autorisé pour cette campagne
+  </div>
+
+  <table class="data-table" *ngIf="parents.length > 0 || parentSearch">
+    <thead>
+      <tr>
+        <th>Nom & Prénom</th>
+        <th>Matricule</th>
+        <th>Utilisations</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ✅ parentsPagines au lieu de filteredParents -->
+      <tr *ngFor="let p of parentsPagines">
+        <td>{{ p.nomPrenom }}</td>
+        <td>{{ p.matricule }}</td>
+        <td>{{ p.utilise }} / {{ p.autorises }}</td>
+        <td>
+          <span [class]="p.utilise < p.autorises ? 'status-badge success' : 'status-badge danger'">
+            {{ p.utilise < p.autorises ? 'Disponible' : 'Quota atteint' }}
+          </span>
+        </td>
+        <td>
+          <div class="row-actions">
+            <button class="action-icon" (click)="editParent(p); $event.stopPropagation()">✏️</button>
+            <button class="action-icon danger" (click)="deleteParent(p.id); $event.stopPropagation()">🗑️</button>
+          </div>
+        </td>
+      </tr>
+
+      <tr *ngIf="parentsPagines.length === 0">
+        <td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">
+          Aucun parent trouvé pour "{{ parentSearch }}"
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── Pagination ───────────────────────────────────────────── -->
+  <div class="pagination-bar" *ngIf="parentsTotalPages > 1">
+    <span class="pagination-info">
+  {{ (parentPage - 1) * parentPageSize + 1 }}–{{ getParentPageEnd() }}
+  sur {{ filteredParents.length }}
+</span>
+
+    <div class="pagination-controls">
+  <button class="page-btn" [disabled]="parentPage === 1" (click)="goToParentPage(1)">«</button>
+  <button class="page-btn" [disabled]="parentPage === 1" (click)="goToParentPage(parentPage - 1)">‹</button>
+
+  <ng-container *ngFor="let n of parentPageNumbers">
+    <!-- "..." séparateur -->
+    <span *ngIf="n === -1" class="page-dots">…</span>
+    <!-- bouton numéro -->
+    <button
+      *ngIf="n !== -1"
+      class="page-btn"
+      [class.active]="n === parentPage"
+      (click)="goToParentPage(n)">
+      {{ n }}
+    </button>
+  </ng-container>
+
+  <button class="page-btn" [disabled]="parentPage === parentsTotalPages" (click)="goToParentPage(parentPage + 1)">›</button>
+  <button class="page-btn" [disabled]="parentPage === parentsTotalPages" (click)="goToParentPage(parentsTotalPages)">»</button>
+</div>
+    <select class="page-size-select" [(ngModel)]="parentPageSize" (change)="parentPage = 1">
+      <option [value]="5">5 / page</option>
+      <option [value]="10">10 / page</option>
+      <option [value]="25">25 / page</option>
+    </select>
+  </div>
+</div>
+
+<!-- Message initial : aucune campagne sélectionnée -->
+<div class="table-card" style="margin-top:20px; text-align:center; 
+     color:var(--text-muted); padding:2rem;" *ngIf="!selectedCampagne">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+       style="width:32px; height:32px; margin-bottom:8px; opacity:0.4">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+  </svg>
+  <p>Cliquez sur une campagne pour voir ses parents autorisés</p>
+</div>
+
+    </section>
+
+    <!-- ===== SECTION: CANDIDATURES ===== -->
+    <section class="content-section" *ngIf="activeSection === 'candidatures'">
+  <div class="section-header">
+    <h2 class="section-title">Liste des Candidatures</h2>
+    <div class="action-buttons">
+      <button class="btn btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+        Exporter
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats mini -->
+  <div class="stats-mini-grid">
+    <div class="mini-stat">
+      <span class="mini-value">{{ filteredCandidatures.length }}</span>
+      <span class="mini-label">Total</span>
+    </div>
+    <div class="mini-stat success">
+      <span class="mini-value">{{ stats.candidaturesAcceptees }}</span>
+      <span class="mini-label">Acceptées</span>
+    </div>
+    <div class="mini-stat warning">
+      <span class="mini-value">{{ stats.candidaturesEnAttente }}</span>
+      <span class="mini-label">En attente</span>
+    </div>
+    <div class="mini-stat danger">
+      <span class="mini-value">{{ stats.candidaturesRefusees }}</span>
+      <span class="mini-label">Refusées</span>
+    </div>
+  </div>
+
+  <!-- ===== BARRE DE FILTRES ===== -->
+  <div class="table-card" style="margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.08));">
+    <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; padding: 4px 0;">
+
+      <!-- Filtre Région -->
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 180px;">
+  <label 
+    for="filter-region"
+    style="font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         style="width:11px;height:11px; margin-right:4px; vertical-align:middle">
+      <circle cx="12" cy="10" r="3"/>
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+    </svg>
+    Directions de rattachement
+  </label>
+  <select 
+    id="filter-region"
+    [(ngModel)]="candidatureFilterRegion"
+    (ngModelChange)="onRegionFilterChange()"
+    style="background: var(--surface-2); border: 1px solid var(--border-color, rgba(255,255,255,0.1)); border-radius: 6px; padding: 6px 10px; font-size: 13px; color: var(--text-primary); cursor: pointer;">
+    <option value="">Toutes les régions</option>
+    <option *ngFor="let r of regionsDisponibles" [value]="r">{{ r }}</option>
+  </select>
+</div>
+
+      <!-- Filtre Structure -->
+      <div style="display: flex; flex-direction: column; gap: 4px; min-width: 220px;">
+  <label 
+    for="filter-structure"
+    style="font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         style="width:11px;height:11px; margin-right:4px; vertical-align:middle">
+      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+      <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+    </svg>
+    Structure
+  </label>
+  <select 
+    id="filter-structure"
+    [(ngModel)]="candidatureFilterStructure"
+    (ngModelChange)="filterCandidatures()"
+    [disabled]="structuresDisponibles.length === 0"
+    [style.opacity]="structuresDisponibles.length === 0 ? 0.5 : 1"
+    style="background: var(--surface-2); border: 1px solid var(--border-color, rgba(255,255,255,0.1)); border-radius: 6px; padding: 6px 10px; font-size: 13px; color: var(--text-primary); cursor: pointer;">
+    
+    <option value="">Toutes les structures</option>
+
+    <optgroup label="🏪 Espaces Commerciaux" *ngIf="structuresECDisponibles.length > 0">
+      <option *ngFor="let s of structuresECDisponibles" [value]="s.nom">
+        {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
+        {{ s.disponible ? '' : '⛔' }}
+      </option>
+    </optgroup>
+
+    <optgroup label="💻 Centres Technologiques" *ngIf="structuresCTDisponibles.length > 0">
+      <option *ngFor="let s of structuresCTDisponibles" [value]="s.nom">
+        {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
+        {{ s.disponible ? '' : '⛔' }}
+      </option>
+    </optgroup>
+
+    <optgroup label="🏢 Structures Centrales" *ngIf="structuresSCDisponibles.length > 0">
+      <option *ngFor="let s of structuresSCDisponibles" [value]="s.nom">
+        {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
+        {{ s.disponible ? '' : '⛔' }}
+      </option>
+    </optgroup>
+
+  </select>
+</div>
+      <!-- Filtre Statut -->
+      <div style="display: flex; flex-direction: column; gap: 4px; min-width: 150px;">
+  <label 
+    for="filter-statut"
+    style="font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         style="width:11px;height:11px; margin-right:4px; vertical-align:middle">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+    Statut
+  </label>
+  <select 
+    id="filter-statut"
+    [(ngModel)]="candidatureFilterStatut"
+    (ngModelChange)="filterCandidatures()"
+    style="background: var(--surface-2); border: 1px solid var(--border-color, rgba(255,255,255,0.1)); border-radius: 6px; padding: 6px 10px; font-size: 13px; color: var(--text-primary); cursor: pointer;">
+    <option value="">Tous les statuts</option>
+    <option value="EN_ATTENTE">En attente</option>
+    <option value="ACCEPTEE">Acceptée</option>
+    <option value="REJETEE">Refusée</option>
+    <option value="EN_ATTENTE_VALIDATION_ADMIN">En attente de validation</option>
+  </select>
+</div>
+
+      <!-- Filtre Mois de travail -->
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 160px;">
+  <label 
+    for="filter-mois"
+    style="font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         style="width:11px;height:11px; margin-right:4px; vertical-align:middle">
+      <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    Mois de travail
+  </label>
+  <select 
+    id="filter-mois"
+    [(ngModel)]="candidatureFilterMois"
+    (ngModelChange)="filterCandidatures()"
+    style="background: var(--surface-2); border: 1px solid var(--border-color, rgba(255,255,255,0.1)); border-radius: 6px; padding: 6px 10px; font-size: 13px; color: var(--text-primary); cursor: pointer;">
+    <option value="">Tous les mois</option>
+    <option value="JUILLET">Juillet</option>
+    <option value="AOUT">Août</option>
+    <option value="JUILLET_AOUT">Juillet & Août</option>
+  </select>
+</div>
+      <!-- Bouton Reset -->
+      <button class="btn btn-ghost"
+              (click)="resetFiltresCandidatures()"
+              *ngIf="candidatureFilterRegion || candidatureFilterStructure || candidatureFilterStatut"
+              style="align-self: flex-end;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             style="width:14px;height:14px">
+          <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
+        </svg>
+        Réinitialiser
+      </button>
+
+      <!-- Compteur résultats -->
+      <div style="align-self: flex-end; margin-left: auto; font-size: 12px; color: var(--text-muted); padding-bottom: 6px;">
+        <span style="color: var(--text-primary); font-weight: 600;">{{ filteredCandidatures.length }}</span>
+        résultat(s) sur {{ candidatures.length }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau -->
+  <div class="table-card" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Candidat</th>
+          <th>CIN</th>
+          <th>Direction d'affectation</th>
+          <th>Structure d'affectation</th>
+          <th>Mois</th>
+          <th>Date Dépôt</th>
+          <th>Statut</th>
+          <th>Documents</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cand of filteredCandidatures" class="table-row">
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar-sm">
+                {{ cand.saisonnier.nom[0] }}{{ cand.saisonnier.prenom[0] }}
+              </div>
+              <div>
+                <span class="name-primary">{{ cand.saisonnier.nom }} {{ cand.saisonnier.prenom }}</span>
+                <span class="name-secondary">{{ cand.saisonnier.email }}</span>
+              </div>
+            </div>
+          </td>
+          
+          <td>{{ cand.saisonnier.cin }}</td>
+          <td>
+            <span style="display:inline-flex; align-items:center; gap:4px; font-size:12px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--blue-400);flex-shrink:0;"></span>
+              {{ cand.saisonnier.region.nom }}
+            </span>
+          </td>
+          <td>
+            <span style="display:inline-flex; align-items:center; gap:4px; font-size:12px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--green-400);flex-shrink:0;"></span>
+              {{ candidatureStructureMap.get(cand.id)?.nom ?? '—' }}
+
+            </span>
+          <td>
+            <span style="display:inline-flex; align-items:center; gap:4px; font-size:12px; 
+                        background: var(--surface-2); padding: 2px 8px; border-radius: 4px;">
+              {{ cand.saisonnier.moisTravail | titlecase }}
+            </span>
+          </td>
+          <td>{{ cand.dateDepot }}</td>
+          <td>
+  <span [ngStyle]="{
+      'display':          'inline-flex',
+      'align-items':      'center',
+      'gap':              '6px',
+      'padding':          '4px 10px',
+      'border-radius':    '20px',
+      'font-size':        '12px',
+      'font-weight':      '600',
+      'white-space':      'nowrap',
+      'background':       cand.statut === 'ACCEPTEE'                    ? 'rgba(34,197,94,0.15)'
+                        : cand.statut === 'REJETEE'                     ? 'rgba(239,68,68,0.15)'
+                        : cand.statut === 'EN_ATTENTE_VALIDATION_ADMIN' ? 'rgba(99,102,241,0.15)'
+                        :                                                 'rgba(234,179,8,0.15)',
+      'color':            cand.statut === 'ACCEPTEE'                    ? '#16a34a'
+                        : cand.statut === 'REJETEE'                     ? '#dc2626'
+                        : cand.statut === 'EN_ATTENTE_VALIDATION_ADMIN' ? '#4f46e5'
+                        :                                                 '#ca8a04'
+    }">
+
+    <!-- point coloré -->
+    <span [ngStyle]="{
+        'width':        '6px',
+        'height':       '6px',
+        'border-radius':'50%',
+        'flex-shrink':  '0',
+        'background':   cand.statut === 'ACCEPTEE'                    ? '#16a34a'
+                      : cand.statut === 'REFUSEE'                     ? '#dc2626'
+                      : cand.statut === 'EN_ATTENTE_VALIDATION_ADMIN' ? '#4f46e5'
+                      :                                                 '#ca8a04'
+      }">
+    </span>
+
+    {{ cand.statut === 'EN_ATTENTE'                  ? 'En attente'
+     : cand.statut === 'ACCEPTEE'                    ? 'Acceptée'
+     : cand.statut === 'REJETEE'                     ? 'Refusée'
+     : cand.statut === 'EN_ATTENTE_VALIDATION_ADMIN' ? 'En validation'
+     : cand.statut }}
+  </span>
+</td>
+          <td>
+            <div *ngFor="let doc of cand.documents">
+              <a [href]="doc.url" target="_blank">{{ doc.type }}</a>
+            </div>
+          </td>
+
+                    <td>
+            <button class="btn btn-sm btn-primary"
+                    (click)="openDossier(cand)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  style="width:14px;height:14px;">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Voir
+            </button>
+          </td>
+        </tr>
+
+        <!-- Ligne vide -->
+        <tr *ngIf="filteredCandidatures.length === 0">
+          <td colspan="7" style="text-align:center; padding: 32px; color: var(--text-muted); font-size: 13px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                 style="width:32px;height:32px;margin:0 auto 8px;display:block;opacity:0.4">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+            Aucune candidature ne correspond aux filtres sélectionnés
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    <!-- ===== SECTION: UTILISATEURS ===== -->
+    <section class="content-section" *ngIf="activeSection === 'utilisateurs'">
+      <div class="section-header">
+        <h2 class="section-title">Tous les Utilisateurs</h2>
+        <div class="action-buttons">
+          <button class="btn btn-outline">Exporter</button>
+          <button class="btn btn-primary">+ Ajouter</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Rôle</th>
+              <th>Département</th>
+              <th>Dernière Connexion</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of utilisateurs" class="table-row">
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar-sm">{{ user.initiales }}</div>
+                  <div>
+                    <span class="name-primary">{{ user.nom }}</span>
+                    <span class="name-secondary">{{ user.email }}</span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="role-badge" [ngClass]="user.roleClass">{{ user.role }}</span></td>
+              <td>{{ user.departement }}</td>
+              <td>{{ user.derniereConnexion }}</td>
+              <td><span class="status-badge" [ngClass]="user.statut">{{ user.statutLabel }}</span></td>
+              <td>
+                <div class="row-actions">
+                  <button class="action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <button class="action-icon danger">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: PRÉSENCE & PAIEMENT ===== -->
+    <section class="content-section" *ngIf="activeSection === 'presence'">
+
+      <!-- Header -->
+      <div class="section-header">
+        <h2 class="section-title">Présence & Paiement</h2>
+        <div class="action-buttons">
+          <button class="btn btn-outline" (click)="exportPresencePDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            Exporter PDF
+          </button>
+          <button class="btn btn-primary" (click)="exportPresenceExcel()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            Exporter Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Cards Présence -->
+      <div class="stats-grid presence-stats">
+        <div class="stat-card presence-card-blue">
+          <div class="stat-icon presence-icon-blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="stat-data">
+            <span class="stat-value">{{ presenceStats.totalSaisonniers }}</span>
+            <span class="stat-label">Saisonniers</span>
+          </div>
+        </div>
+        <div class="stat-card presence-card-green">
+          <div class="stat-icon presence-icon-green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="stat-data">
+            <span class="stat-value">{{ presenceStats.masseSalariale | number:'1.0-0' }} DT</span>
+            <span class="stat-label">Masse salariale</span>
+          </div>
+        </div>
+        <div class="stat-card presence-card-orange">
+          <div class="stat-icon presence-icon-orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="stat-data">
+            <span class="stat-value">{{ presenceStats.joursAbsence }}</span>
+            <span class="stat-label">Jours d'absence</span>
+          </div>
+        </div>
+        <div class="stat-card presence-card-purple">
+          <div class="stat-icon presence-icon-purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <div class="stat-data">
+            <span class="stat-value">{{ presenceStats.tauxJournalier }} DT</span>
+            <span class="stat-label">Taux journalier</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formula Bar -->
+      <<div class="presence-formula-bar">
+  
+  
+</div>
+
+      <!-- Config Bar -->
+      <div class="presence-config-bar">
+
+        
+         <div class="config-field">
+  <label for="duree-contrat">Durée du contrat (jours)</label>
+  <input 
+    id="duree-contrat"
+    type="number" 
+    [(ngModel)]="presenceConfig.dureeContrat" 
+    (ngModelChange)="recalculerPresence()" 
+    min="1" 
+    disabled />
+</div>
+       
+
+        <div class="config-field">
+  <label for="presence-campagne">Campagne</label>
+  <select 
+    id="presence-campagne"
+    [(ngModel)]="presenceConfig.campagneId" 
+    (ngModelChange)="onPresenceCampagneChange()">
+    <option *ngFor="let c of campagnes" [value]="c.id">{{ c.nom }}</option>
+  </select>
+</div>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="table-card">
+        <div class="presence-table-toolbar">
+           <div style="display:flex;flex-direction:column;gap:4px;min-width:180px;">
+  <label 
+    for="presence-direction"
+    style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;">
+    Direction
+  </label>
+  <select 
+    id="presence-direction"
+    [(ngModel)]="presenceFilterRegion"
+    (ngModelChange)="onPresenceRegionChange()"
+    style="background:var(--surface-2);border:1px solid var(--border-color,rgba(255,255,255,0.1));border-radius:6px;padding:6px 10px;font-size:13px;color:var(--text-primary);">
+    <option value="">Toutes les directions</option>
+    <option *ngFor="let r of presenceRegionsDisponibles" [value]="r">{{ r }}</option>
+  </select>
+</div>
+
+    <!-- Filtre Structure -->
+    <div style="display:flex;flex-direction:column;gap:4px;min-width:200px;">
+  <label 
+    for="presence-structure"
+    style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;">
+    Structure
+  </label>
+  <select 
+    id="presence-structure"
+    [(ngModel)]="presenceFilterStructure"
+    (ngModelChange)="filterPresence()"
+    [disabled]="!presenceFilterRegion"
+    style="background:var(--surface-2);border:1px solid var(--border-color,rgba(255,255,255,0.1));border-radius:6px;padding:6px 10px;font-size:13px;color:var(--text-primary);">
+    <option value="">Toutes les structures</option>
+    <option *ngFor="let s of presenceStructuresDisponibles" [value]="s">{{ s }}</option>
+  </select>
+</div>
+
+    <!-- Search -->
+    <div class="search-box presence-search" style="flex:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" placeholder="Rechercher un saisonnier..."
+             [(ngModel)]="presenceSearchQuery"
+             (ngModelChange)="filterPresence()" />
+    </div>
+
+    <!-- Reset -->
+    <button class="btn btn-ghost"
+            *ngIf="presenceFilterRegion || presenceFilterStructure"
+            (click)="resetFiltresPresence()"
+            style="align-self:flex-end;">
+      Réinitialiser
+    </button>
+
+    <!-- Compteur -->
+    <div style="align-self:flex-end;font-size:12px;color:var(--text-muted);padding-bottom:6px;">
+      <span style="color:var(--text-primary);font-weight:600;">{{ filteredPresenceRows.length }}</span>
+      / {{ presenceRows.length }}
+    </div>
+          
+        </div>
+
+        <!-- Présence Table -->
+        <div class="presence-table-wrap" >
+  <table class="data-table presence-table">
+    <thead>
+      <tr>
+        <th class="col-num">N°</th>
+        <th class="col-name">Nom et prénom</th>
+        <th class="col-cin">Numéro CIN</th>
+        <th class="col-rib">Numéro de compte</th>
+        <th class="col-absences">Nbre de jours d'absences</th>
+        <th class="col-duree">Nbre de jours de travail</th>
+        
+        <th class="col-montant">Montant net (DT)</th>
+        
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of filteredPresenceRows; let i = index" class="table-row presence-row">
+        <td class="number-cell">{{ i + 1 }}</td>
+
+        <td>
+          <span class="name-primary">{{ row.nom }}</span>
+        </td>
+
+        <td class="mono-cell">{{ row.cin }}</td>
+
+        <td>
+          <input type="text"
+                 class="rib-input"
+                 placeholder="RIB / N° compte..."
+                 [(ngModel)]="row.rib"
+                 (ngModelChange)="onPresenceRowChange(row)" />
+        </td>
+
+        <td>
+          <button class="absence-btn"
+                  [class.has-absences]="row.absences > 0"
+                  (click)="openAbsenceModal(row)">
+            {{ row.absences }}
+          </button>
+        </td>
+
+        <td>
+          <span class="duree-badge">{{ row.dureeContrat }}</span>
+        </td>
+
+        
+
+        <td>
+          <span class="montant-value">{{ row.montantNet | number:'1.3-3' }} DT</span>
+        </td>
+
+        
+
+        
+
+        
+      </tr>
+    </tbody>
+
+    <!-- Footer totals -->
+    <tfoot>
+      <tr class="presence-totals-row">
+        <td colspan="3" class="totals-label">Total général</td>
+        <td></td>
+        <td><strong>{{ presenceTotals.totalAbsences }}</strong></td>
+        <td><strong>{{ presenceTotals.totalJours }}</strong></td>
+        
+        <td><strong class="total-montant">{{ presenceTotals.totalMontant | number:'1.3-3' }} DT</strong></td>
+        <td colspan="3"></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: MEMO INTIDAB ===== -->
+    <section class="content-section" *ngIf="activeSection === 'memo'">
+  <div class="section-header">
+    <h2 class="section-title">مذكرة الإنتداب </h2>
+    <div class="action-buttons">
+      
+    </div>
+  </div>
+
+  <div class="memo-layout">
+
+    <!-- ══ SIDEBAR GAUCHE ══ -->
+    <div class="memo-sidebar-panel">
+
+      <!-- Sélecteur de campagne -->
+      <div class="memo-campagne-block">
+  <label 
+    for="memo-campagne"
+    class="memo-field-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         style="width:13px;height:13px">
+      <rect x="3" y="4" width="18" height="18" rx="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    الحملة
+  </label>
+  <select 
+    id="memo-campagne"
+    [(ngModel)]="memoSelectedCampagneId"
+    (ngModelChange)="onMemoCampagneChange($event)"
+    class="memo-select">
+    <option [ngValue]="null">— اختر الحملة —</option>
+    <option *ngFor="let c of campagnes" [ngValue]="c.id">
+      {{ c.nom }}
+    </option>
+  </select>
+</div>
+
+      <!-- Icône + titre -->
+      <div class="memo-doc-icon">
+        <svg viewBox="0 0 48 48" fill="none">
+          <rect x="6" y="4" width="28" height="36" rx="3" fill="#E0F2FF" stroke="#1E8BD4" stroke-width="1.5"/>
+          <path d="M28 4v10h10" stroke="#1E8BD4" stroke-width="1.5" fill="none"/>
+          <rect x="28" y="14" width="10" height="26" rx="2" fill="#1E8BD4" opacity="0.15"/>
+          <path d="M34 4l4 4v6h-6V4l2 0z" fill="#1E8BD4" opacity="0.3"/>
+          <line x1="12" y1="22" x2="30" y2="22" stroke="#1E8BD4" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="12" y1="27" x2="30" y2="27" stroke="#1E8BD4" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="12" y1="32" x2="22" y2="32" stroke="#1E8BD4" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="memo-doc-year">سنة 2025</div>
+
+      <!-- Meta infos -->
+      <div class="memo-meta-list">
+        <div class="memo-meta-item">
+          <span class="memo-meta-key">النوع</span>
+          <span class="memo-meta-val">مذكرة إدارية</span>
+        </div>
+        <div class="memo-meta-item">
+          <span class="memo-meta-key">السنة</span>
+          <span class="memo-meta-val">2025</span>
+        </div>
+        <div class="memo-meta-item">
+          <span class="memo-meta-key">الصيغة</span>
+          <span class="memo-meta-val">PDF</span>
+        </div>
+        <div class="memo-meta-item">
+          <span class="memo-meta-key">الحالة</span>
+          <span class="memo-meta-val status-active-badge">سارية المفعول</span>
+        </div>
+      </div>
+
+      <!-- Boutons download/print -->
+      
+
+      <!-- ══ LISTE DOCUMENTS DE LA CAMPAGNE ══ -->
+      <div class="memo-docs-section" *ngIf="memoSelectedCampagneId">
+
+        <!-- En-tête liste -->
+        <div class="memo-docs-section-header">
+  <span class="memo-docs-section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         style="width:14px;height:14px">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+    </svg>
+    وثائق الحملة
+    <span class="docs-count-badge" *ngIf="memoDocumentsCampagne.length > 0">
+      {{ memoDocumentsCampagne.length }}
+    </span>
+  </span>
+
+  <!-- Remplacer label par button + input caché -->
+  <button 
+    type="button"
+    class="btn-add-doc" 
+    title="إضافة وثيقة"
+    [class.disabled]="!memoSelectedCampagneId"
+    [disabled]="!memoSelectedCampagneId"
+    (click)="fileInput.click()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
+  <input 
+    #fileInput
+    type="file" 
+    accept=".pdf,.jpg,.png"
+    [disabled]="!memoSelectedCampagneId"
+    (change)="onMemoDocumentUpload($event)"
+    style="display:none" />
+</div>
+
+        <!-- Spinner -->
+        <div class="memo-docs-loading" *ngIf="isLoadingDocsCampagne">
+          <div class="memo-spinner" style="width:22px;height:22px;border-width:2px;"></div>
+          <span>جاري التحميل...</span>
+        </div>
+
+        <!-- Aucun document -->
+        <div class="memo-docs-vide" *ngIf="!isLoadingDocsCampagne && memoDocumentsCampagne.length === 0">
+          <svg viewBox="0 0 32 32" fill="none" style="width:32px;height:32px;opacity:0.3">
+            <rect x="4" y="2" width="18" height="26" rx="3" fill="#A8E1FF" stroke="#4BBEF5" stroke-width="1.5"/>
+            <path d="M16 2v8h8" stroke="#4BBEF5" stroke-width="1.5" fill="none"/>
+          </svg>
+          <span>لا توجد وثائق لهذه الحملة</span>
+        </div>
+
+        <!-- Liste des documents cliquables -->
+        <div class="memo-doc-list" *ngIf="!isLoadingDocsCampagne && memoDocumentsCampagne.length > 0">
+          <div class="memo-doc-list-item"
+     *ngFor="let doc of memoDocumentsCampagne"
+     [class.selected]="memoDocumentSelectionne?.id === doc.id"
+     (click)="selectionnerDocumentMemo(doc)"
+     (keydown.enter)="selectionnerDocumentMemo(doc)"
+     (keydown.space)="selectionnerDocumentMemo(doc)"
+     tabindex="0"
+     role="button"
+     [attr.aria-label]="'Sélectionner le document ' + doc.nom">
+
+            <!-- Icône PDF -->
+            <div class="memo-doc-list-icon">
+              <svg viewBox="0 0 32 32" fill="none">
+                <rect x="2" y="1" width="20" height="28" rx="3"
+                      fill="#E0F2FF" stroke="#1E8BD4" stroke-width="1.2"/>
+                <path d="M16 1v8h8" stroke="#1E8BD4" stroke-width="1.2" fill="none"/>
+                <rect x="16" y="9" width="8" height="20" rx="1.5"
+                      fill="#1E8BD4" opacity="0.12"/>
+                <line x1="6" y1="14" x2="18" y2="14" stroke="#1E8BD4"
+                      stroke-width="0.9" stroke-linecap="round"/>
+                <line x1="6" y1="17" x2="18" y2="17" stroke="#1E8BD4"
+                      stroke-width="0.9" stroke-linecap="round"/>
+                <line x1="6" y1="20" x2="13" y2="20" stroke="#1E8BD4"
+                      stroke-width="0.9" stroke-linecap="round"/>
+              </svg>
+            </div>
+
+            <!-- Nom + type -->
+            <div class="memo-doc-list-info">
+              <span class="memo-doc-list-nom">{{ doc.nom }}</span>
+              <span class="memo-doc-list-type">{{ doc.type }}</span>
+            </div>
+
+            <!-- Actions rapides -->
+            <div class="memo-doc-list-actions">
+              <button class="memo-quick-btn"
+                      title="فتح في نافذة جديدة"
+                      (click)="ouvrirLienDoc(doc.url); $event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </button>
+              <button class="memo-quick-btn danger"
+                      title="حذف"
+                      (click)="supprimerDocumentMemo(doc); $event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- ══ Fin documents ══ -->
+
+      <!-- Résumé -->
+      
+    </div>
+
+    <!-- ══ VIEWER DROITE ══ -->
+    <div class="memo-viewer-panel">
+
+      <!-- Toolbar du viewer -->
+      <div class="memo-viewer-topbar" *ngIf="memoDocumentSelectionne">
+        <div class="memo-viewer-doc-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               style="width:16px;height:16px;color:var(--blue-400)">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <span class="memo-viewer-doc-nom">{{ memoDocumentSelectionne.nom }}</span>
+          <span class="memo-viewer-doc-type">{{ memoDocumentSelectionne.type }}</span>
+        </div>
+        <div class="memo-viewer-topbar-actions">
+          <button class="viewer-topbar-btn"
+                  title="تحميل"
+                  (click)="ouvrirLienDoc(memoDocumentSelectionne.url)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            تحميل
+          </button>
+          <button class="viewer-topbar-btn"
+                  title="فتح في نافذة جديدة"
+                  (click)="ouvrirLienDoc(memoDocumentSelectionne.url)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            فتح
+          </button>
+          <button class="viewer-topbar-btn close"
+                  title="إغلاق"
+                  (click)="fermerViewerDoc()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="memo-viewer-content">
+
+        <!-- Spinner chargement document -->
+        <div class="memo-loading" *ngIf="isLoadingViewerDoc">
+          <div class="memo-spinner"></div>
+          <span>جاري تحميل الوثيقة...</span>
+        </div>
+
+        <!-- Document sélectionné affiché -->
+        <ng-container *ngIf="!isLoadingViewerDoc && memoDocumentSelectionne && memoViewerUrl">
+          <div class="memo-pdf-frame-wrap">
+            <object
+              [attr.data]="memoViewerUrl"
+              type="application/pdf"
+              class="memo-pdf-object">
+              <!-- Fallback si PDF non supporté -->
+              <div class="pdf-fallback-msg">
+                <svg viewBox="0 0 48 48" fill="none" style="width:48px;height:48px">
+                  <rect x="4" y="2" width="30" height="40" rx="4"
+                        fill="#E0F2FF" stroke="#1E8BD4" stroke-width="1.5"/>
+                  <path d="M26 2v12h12" stroke="#1E8BD4" stroke-width="1.5" fill="none"/>
+                </svg>
+                <p style="color:rgba(255,255,255,0.7); font-size:14px;">
+                  Votre navigateur ne supporte pas l'affichage PDF.
+                </p>
+                <a [href]="memoDocumentSelectionne.url"
+                   download
+                   class="btn btn-primary">
+                  Télécharger le document
+                </a>
+              </div>
+            </object>
+          </div>
+        </ng-container>
+
+        <!-- État : aucun document sélectionné -->
+        <ng-container *ngIf="!isLoadingViewerDoc && !memoDocumentSelectionne">
+
+          <!-- Circulaire générale si pas de sélection -->
+          <ng-container *ngIf="memoDocument.hasFile && !memoSelectedCampagneId">
+            <div class="memo-pdf-frame-wrap">
+              <object
+                [attr.data]="memoDocument.fileUrl"
+                type="application/pdf"
+                class="memo-pdf-object">
+                <div class="pdf-fallback-msg">
+                  <p style="color:rgba(255,255,255,0.7);">
+                    Votre navigateur ne supporte pas l'affichage PDF.
+                  </p>
+                  <a [href]="memoDocument.rawUrl" download class="btn btn-primary">
+                    Télécharger
+                  </a>
+                </div>
+              </object>
+            </div>
+          </ng-container>
+
+          <!-- État vide -->
+          <div class="memo-viewer-empty" *ngIf="!memoDocument.hasFile || memoSelectedCampagneId">
+            <div class="memo-viewer-empty-inner"
+                 (dragover)="$event.preventDefault(); memoDragOver = true"
+                 (dragleave)="memoDragOver = false"
+                 (drop)="onMemoDrop($event)"
+                 [class.dragover]="memoDragOver">
+
+              <div class="memo-viewer-empty-icon">
+                <svg viewBox="0 0 80 80" fill="none">
+                  <circle cx="40" cy="40" r="36" fill="rgba(75,190,245,0.08)"
+                          stroke="rgba(75,190,245,0.2)" stroke-width="1.5"/>
+                  <rect x="22" y="16" width="28" height="38" rx="4"
+                        fill="rgba(75,190,245,0.15)" stroke="#4BBEF5" stroke-width="1.5"/>
+                  <path d="M40 16v12h12" stroke="#4BBEF5" stroke-width="1.5" fill="none"/>
+                  <line x1="28" y1="34" x2="44" y2="34" stroke="#4BBEF5"
+                        stroke-width="1.2" stroke-linecap="round"/>
+                  <line x1="28" y1="39" x2="44" y2="39" stroke="#4BBEF5"
+                        stroke-width="1.2" stroke-linecap="round"/>
+                  <line x1="28" y1="44" x2="37" y2="44" stroke="#4BBEF5"
+                        stroke-width="1.2" stroke-linecap="round"/>
+                  <!-- Flèche curseur -->
+                  <path d="M52 52 L62 62 M62 56 L62 62 L56 62"
+                        stroke="#4BBEF5" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+
+              <p class="memo-viewer-empty-title">
+                <ng-container *ngIf="!memoSelectedCampagneId">
+                  اختر حملة من القائمة لعرض وثائقها
+                </ng-container>
+                <ng-container *ngIf="memoSelectedCampagneId && memoDocumentsCampagne.length === 0">
+                  لا توجد وثائق لهذه الحملة — أضف وثيقة من القائمة
+                </ng-container>
+                <ng-container *ngIf="memoSelectedCampagneId && memoDocumentsCampagne.length > 0">
+                  انقر على وثيقة من القائمة لعرضها هنا
+                </ng-container>
+              </p>
+
+              <p class="memo-viewer-empty-sub"
+                 *ngIf="!memoSelectedCampagneId">
+                Glissez-déposez un PDF ou sélectionnez une campagne
+              </p>
+
+              <!-- Zone drop pour circulaire globale -->
+              <label class="btn btn-outline memo-drop-btn"
+                     *ngIf="!memoSelectedCampagneId"
+                     style="cursor:pointer; margin-top:8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     style="width:16px;height:16px">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                </svg>
+                Charger la circulaire
+                <input type="file" accept=".pdf"
+                       (change)="onMemoFileSelected($event)"
+                       style="display:none"/>
+              </label>
+            </div>
+          </div>
+
+        </ng-container>
+
+        <!-- Statut upload -->
+        <div class="memo-upload-status" *ngIf="isUploading || uploadSuccess || uploadError">
+          <span class="status-uploading" *ngIf="isUploading">⏳ Sauvegarde en cours...</span>
+          <span class="status-success"   *ngIf="uploadSuccess">✅ Document sauvegardé</span>
+          <span class="status-error"     *ngIf="uploadError">❌ {{ uploadError }}</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+    <!-- ===== SECTION: STRUCTURES PAR RÉGION ===== -->
+    <section class="content-section" *ngIf="activeSection === 'structures'">
+      <div class="section-header">
+        <div class="action-buttons">
+          
+          <button class="btn btn-primary" (click)="openStructureUploadModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Modifier le fichier
+          </button>
+        </div>
+      </div>
+
+      <div class="structures-stats-row">
+        <div class="struct-stat-card">
+          <span class="struct-stat-num">{{ structuresStats.gouvernorats }}</span>
+          <span class="struct-stat-lbl">Direction d'affectation</span>
+        </div>
+        <div class="struct-stat-card">
+          <span class="struct-stat-num">{{ structuresStats.total }}</span>
+          <span class="struct-stat-lbl">Structures totales</span>
+        </div>
+        <div class="struct-stat-card highlight-blue">
+          <span class="struct-stat-num">{{ structuresStats.espacesCommerciaux }}</span>
+          <span class="struct-stat-lbl">Espace TT</span>
+        </div>
+        <div class="struct-stat-card highlight-purple">
+          <span class="struct-stat-num">{{ structuresStats.centresTechnologiques }}</span>
+          <span class="struct-stat-lbl">Centre Technique</span>
+        </div>
+        <div class="struct-stat-card highlight-orange">
+          <span class="struct-stat-num">{{ structuresStats.saisonnersAutorises }}</span>
+          <span class="struct-stat-lbl">Saisonniers autorisés</span>
+        </div>
+        <div class="struct-stat-card highlight-green">
+          <span class="struct-stat-num">{{ structuresStats.saisonnersRecrutes }}</span>
+          <span class="struct-stat-lbl">Saisonniers postulés</span>
+        </div>
+      </div>
+
+      <div class="structures-layout">
+        <div class="structures-filter-panel">
+          <div class="struct-filter-section">
+            <div class="struct-filter-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="struct-filter-title">Structures par Direction</div>
+          <div class="struct-filter-subtitle">{{ structuresStats.gouvernorats }} gouvernorats — {{ structuresStats.total }} structures </div>
+
+          <div class="struct-filter-info">
+            <div class="struct-info-row"><span>Direction d'affectation</span><span>{{ structuresStats.gouvernorats }}</span></div>
+            <div class="struct-info-row"><span>EC</span><span>{{ structuresStats.espacesCommerciaux }}</span></div>
+            <div class="struct-info-row"><span>CT</span><span>{{ structuresStats.centresTechnologiques }}</span></div>
+            
+          </div>
+
+         
+
+          <div class="struct-type-filters">
+            <div class="struct-filter-label">Filtrer par type</div>
+            <button class="struct-type-btn" [class.active]="structureTypeFilter === 'tous'" (click)="setStructureFilter('tous')">Tous</button>
+            <button class="struct-type-btn" [class.active]="structureTypeFilter === 'EC'" (click)="setStructureFilter('ESPACE_COMMERCIAL')">Espace TT</button>
+            <button class="struct-type-btn" [class.active]="structureTypeFilter === 'CT'" (click)="setStructureFilter('CENTRE_TECHNIQUE')">Centre Technique</button>
+            <button class="struct-type-btn" [class.active]="structureTypeFilter === 'SC'" (click)="setStructureFilter('STRUCTURE_CENTRALE')">Structure Centrale</button>
+          </div>
+
+          <div class="struct-gov-list">
+            <div class="struct-filter-label"> Direction d'affectation({{ structuresStats.gouvernorats }})</div>
+            <div class="struct-gov-item"
+     *ngFor="let gov of gouvernorats"
+     [class.active]="selectedGouvernorat === gov.nom"
+     (click)="filterByGouvernorat(gov.nom)"
+     (keydown.enter)="filterByGouvernorat(gov.nom)"
+     (keydown.space)="filterByGouvernorat(gov.nom)"
+     tabindex="0"
+     role="button"
+     [attr.aria-label]="'Filtrer par gouvernorat ' + gov.nom">
+  <span class="gov-dot"></span>
+  <span class="gov-name">{{ gov.nom }}</span>
+  <span class="gov-count">{{ gov.count }}</span>
+</div>
+          </div>
+        </div>
+
+        <div class="structures-table-area">
+          <div class="table-card">
+            <div class="struct-table-header">
+              <span class="struct-table-title">Récapitulatif global</span>
+              <span class="struct-table-count">{{ filteredStructures.length }} structures</span>
+              
+               
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Direction d'affectation</th>
+                  <th>Structure d'affectation</th>
+                  <th>Type</th>
+                 
+                  <th>Autorisés</th>
+                  <th>Recrutés</th>
+                  <th>Restants</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let s of filteredStructures; let i = index" class="table-row">
+                  <td class="number-cell">{{ i + 1 }}</td>
+                  <td>
+                    <span class="gov-link" *ngIf="s.isFirstInGov">{{ s.region }}</span>
+                    <span *ngIf="!s.isFirstInGov" class="text-muted">—</span>
+                  </td>
+                  <td>
+                    <span class="name-primary">{{ s.nom }}</span>
+                  </td>
+                  <td>
+                    <span class="type-badge"
+      [ngClass]="s.type === 'ESPACE_COMMERCIAL' ? 'type-ec' : 'type-ct'">{{ s.type }}</span>
+                  </td>
+                 
+                  <td>
+                    <span class="autorises-cell">{{ s.autorises }}</span>
+                  </td>
+                  <td>
+                    <span class="recrutes-cell">{{ s.recrutes }}</span>
+                  </td>
+                  <td>
+                    <span class="restants-cell">{{ s.autorises - s.recrutes }}</span>
+                  </td>
+                  <td>
+                    <span class="status-badge" [ngClass]="s.autorises === s.recrutes ? 'active' : 'en-attente'">
+                      {{ s.autorises === s.recrutes ? 'Complet' : 'En cours' }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="action-icon" title="Modifier" (click)="editStructure(s)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== MODAL: CRÉATION CAMPAGNE ===== -->
+<!-- ===== MODAL: CRÉATION CAMPAGNE ===== -->
+<div class="modal-overlay" 
+     *ngIf="showCreateModal" 
+     (click)="closeModal()"
+     (keydown.escape)="closeModal()"
+     role="dialog"
+     aria-modal="true"
+     aria-label="Créer une campagne">
+
+  <div class="modal" 
+       #modalRef
+       (click)="$event.stopPropagation()"
+       (keydown)="onModalKeydown($event)"
+       role="document">
+    <div class="modal-header">
+      <h3>Créer une Campagne</h3>
+      <button class="modal-close" (click)="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- 1. Année -->
+      <div class="form-group">
+        <label for="campagne-annee">Année de la campagne *</label>
+        <input id="campagne-annee"
+               type="number"
+               placeholder="Ex: 2025"
+               [(ngModel)]="newCampagneAnnee"
+               (ngModelChange)="onAnneeChange()"
+               min="2020" max="2099" />
+      </div>
+
+      <!-- 2. Nom -->
+      <div class="form-group">
+        <label for="campagne-nom">Nom de Campagne</label>
+        <input id="campagne-nom"
+               type="text"
+               [value]="newCampagne.nom"
+               readonly
+               style="background: var(--surface-2); color: var(--text-muted); cursor: not-allowed;" />
+      </div>
+
+      <!-- 3. Description -->
+      <div class="form-group">
+        <label for="campagne-description">Description</label>
+        <textarea id="campagne-description"
+                  rows="3"
+                  placeholder="Description de la campagne..."
+                  [(ngModel)]="newCampagne.description"></textarea>
+      </div>
+
+      <!-- 4 & 5. Dates -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="campagne-date-debut">Date début Candidature *</label>
+          <input id="campagne-date-debut"
+                 type="date"
+                 [(ngModel)]="newCampagne.dateDebut"
+                 [min]="today"
+                 (ngModelChange)="onDateDebutChange()" />
+        </div>
+
+        <div class="form-group">
+          <label for="campagne-date-fin">Date fin Candidature *</label>
+          <input id="campagne-date-fin"
+                 type="date"
+                 [(ngModel)]="newCampagne.dateFin"
+                 [min]="newCampagne.dateDebut"
+                 [disabled]="!newCampagne.dateDebut" />
+        </div>
+      </div>
+
+      <!-- 6. Prime mensuelle -->
+      <div class="form-group">
+        <label for="campagne-budget">Prime mensuelle (dt) *</label>
+        <input id="campagne-budget"
+               type="number"
+               placeholder="Ex: 240"
+               [(ngModel)]="newCampagne.budget" />
+      </div>
+
+      <!-- 7. Upload Excel Structures -->
+      <div class="form-group">
+        <label for="campagne-excel">
+          Directions et Structures d'affectation *
+          <span style="font-size:11px; color: var(--text-muted); font-weight:400;"></span>
+        </label>
+
+        <div class="excel-upload-zone"
+             [class.has-file]="campagneExcelFile"
+             [class.dragover]="campagneExcelDragOver"
+             (dragover)="$event.preventDefault(); campagneExcelDragOver = true"
+             (dragleave)="campagneExcelDragOver = false"
+             (drop)="onCampagneExcelDrop($event)">
+
+          <ng-container *ngIf="!campagneExcelFile">
+            <svg viewBox="0 0 48 48" fill="none" style="width:36px;height:36px">
+              <rect x="4" y="6" width="40" height="36" rx="3" fill="#E8F5E9" stroke="#4CAF50" stroke-width="1.5"/>
+              <line x1="4" y1="16" x2="44" y2="16" stroke="#4CAF50" stroke-width="1"/>
+              <line x1="18" y1="6" x2="18" y2="42" stroke="#4CAF50" stroke-width="1"/>
+              <path d="M28 28l4-4 4 4M32 24v8" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div style="text-align:center">
+              <span style="font-size:13px; color: var(--text-secondary); display:block">
+                Glissez le fichier Excel ici
+              </span>
+              <span style="font-size:11px; color: var(--text-muted)">ou</span>
+            </div>
+            <button type="button"
+                    class="btn btn-outline btn-sm"
+                    style="cursor:pointer; margin-top:4px"
+                    (click)="campagneExcelInput.click()">
+              Parcourir
+            </button>
+            <input id="campagne-excel"
+                   #campagneExcelInput
+                   type="file"
+                   accept=".xlsx,.xls"
+                   (change)="onCampagneExcelSelected($event)"
+                   style="display:none" />
+          </ng-container>
+
+          <ng-container *ngIf="campagneExcelFile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" style="width:28px;height:28px">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="9" y1="3" x2="9" y2="21"/>
+            </svg>
+            <div style="flex:1; min-width:0">
+              <span style="font-size:13px; font-weight:500; color: var(--text-primary); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">
+                {{ campagneExcelFile.name }}
+              </span>
+              <span style="font-size:11px; color: var(--text-muted)">
+                {{ (campagneExcelFile.size / 1024).toFixed(1) }} KB
+              </span>
+            </div>
+            <button class="remove-file" (click)="campagneExcelFile = null; $event.stopPropagation()">✕</button>
+          </ng-container>
+        </div>
+
+        <div class="regions-detected"
+             *ngIf="campagneExcelFile && regionsDetectees.length > 0"
+             style="margin-top:8px; padding:8px 12px; background:rgba(74,158,255,0.08); border-radius:6px; border-left:3px solid #4A9EFF;">
+          <span style="font-size:12px; color:#4A9EFF; font-weight:500;">
+            ✓ {{ regionsDetectees.length }} Direction(s) de rattachement(s) :
+          </span>
+        </div>
+      </div>
+
+      <!-- 8. Upload Excel Parents -->
+      <div class="form-group">
+        <label for="parents-excel">
+          Liste des parents autorisés
+          <span style="font-size:11px; color: var(--text-muted); font-weight:400;">
+            (optionnel — Nom & Prénom + Matricule)
+          </span>
+        </label>
+
+        <div class="excel-upload-zone"
+             [class.has-file]="parentsExcelFile"
+             [class.dragover]="parentsExcelDragOver"
+             (dragover)="$event.preventDefault(); parentsExcelDragOver = true"
+             (dragleave)="parentsExcelDragOver = false"
+             (drop)="onParentsExcelDrop($event)">
+
+          <ng-container *ngIf="!parentsExcelFile">
+            <svg viewBox="0 0 48 48" fill="none" style="width:36px;height:36px">
+              <rect x="4" y="6" width="40" height="36" rx="3" fill="#E8F5E9"
+                    stroke="#4CAF50" stroke-width="1.5"/>
+              <line x1="4"  y1="16" x2="44" y2="16" stroke="#4CAF50" stroke-width="1"/>
+              <line x1="18" y1="6"  x2="18" y2="42" stroke="#4CAF50" stroke-width="1"/>
+              <path d="M28 28l4-4 4 4M32 24v8" stroke="#4CAF50"
+                    stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div style="text-align:center">
+              <span style="font-size:13px; color: var(--text-secondary); display:block">
+                Glissez le fichier Excel des parents ici
+              </span>
+              <span style="font-size:11px; color: var(--text-muted)">
+                Colonnes : Nom & Prénom | Matricule
+              </span>
+            </div>
+            <button type="button"
+                    class="btn btn-outline btn-sm"
+                    style="cursor:pointer; margin-top:4px"
+                    (click)="parentsExcelInput.click()">
+              Parcourir
+            </button>
+            <input id="parents-excel"
+                   #parentsExcelInput
+                   type="file"
+                   accept=".xlsx,.xls"
+                   (change)="onParentsExcelSelected($event)"
+                   style="display:none" />
+          </ng-container>
+
+          <ng-container *ngIf="parentsExcelFile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2"
+                 style="width:28px;height:28px">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="3" y1="9"  x2="21" y2="9"/>
+              <line x1="9" y1="3"  x2="9"  y2="21"/>
+            </svg>
+            <div style="flex:1; min-width:0">
+              <span style="font-size:13px; font-weight:500; color: var(--text-primary);
+                           display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">
+                {{ parentsExcelFile.name }}
+              </span>
+              <span style="font-size:11px; color: var(--text-muted)">
+                {{ (parentsExcelFile.size / 1024).toFixed(1) }} KB
+              </span>
+            </div>
+            <button class="remove-file"
+                    (click)="parentsExcelFile = null; $event.stopPropagation()">✕</button>
+          </ng-container>
+        </div>
+
+        <div style="font-size:11px; color: var(--text-muted); margin-top:6px;
+                    padding: 6px 10px; background: rgba(74,158,255,0.06);
+                    border-radius:4px; border-left:2px solid #4A9EFF;">
+          📋 Format attendu : colonne A = Nom & Prénom, colonne B = Matricule
+        </div>
+      </div>
+
+      <!-- 9. Documents de la campagne -->
+      <div class="form-group">
+        <label>
+          Documents de la campagne
+          <span style="font-size:11px; color: var(--text-muted); font-weight:400;">
+            (optionnel — مذكرة الإنتداب, التزامات…)
+          </span>
+        </label>
+
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+          <button type="button"
+                  class="btn btn-outline btn-sm"
+                  style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;"
+                  (click)="docPendantInput.click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 style="width:14px;height:14px">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+            </svg>
+            Ajouter un document
+          </button>
+          <input #docPendantInput
+                 type="file"
+                 accept=".pdf,.jpg,.png"
+                 (change)="onDocumentPendantSelected($event)"
+                 style="display:none" />
+          <span style="font-size:11px; color: var(--text-muted)">
+            {{ documentsPendants.length }} document(s) ajouté(s)
+          </span>
+        </div>
+
+        <div *ngFor="let doc of documentsPendants; let i = index"
+             style="display:flex; gap:8px; align-items:center; padding:8px;
+                    background:var(--surface-2); border-radius:6px; margin-bottom:6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4A9EFF" stroke-width="2"
+               style="width:20px;height:20px;flex-shrink:0">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <input type="text"
+                 [value]="doc.nom"
+                 (input)="updateDocumentPendantNom(i, $any($event.target).value)"
+                 placeholder="Nom du document"
+                 style="flex:1; font-size:12px;" />
+          <select [value]="doc.type"
+                  (change)="updateDocumentPendantType(i, $any($event.target).value)"
+                  style="font-size:12px; min-width:150px;">
+            <option value="مذكرة الإنتداب">مذكرة الإنتداب</option>
+            <option value="إلتزام">إلتزام — عمل موسمي</option>
+            <option value="autre">Autre</option>
+          </select>
+          <span style="font-size:11px; color:var(--text-muted); white-space:nowrap;">
+            {{ (doc.file.size / 1024).toFixed(0) }} KB
+          </span>
+          <button class="action-icon danger"
+                  title="Retirer"
+                  (click)="supprimerDocumentPendant(i)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div *ngIf="documentsPendants.length === 0"
+             style="font-size:12px; color:var(--text-muted); padding:8px 0;">
+          Aucun document ajouté — vous pourrez en ajouter après la création.
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="closeModal()">Annuler</button>
+      <button class="btn btn-outline"
+              (click)="saveCampagne(false)"
+              [disabled]="isSavingCampagne">
+        Enregistrer Brouillon
+      </button>
+      <button class="btn btn-primary"
+              (click)="saveCampagne(true)"
+              [disabled]="isSavingCampagne">
+        <span *ngIf="isSavingCampagne">⏳ Création...</span>
+        <span *ngIf="!isSavingCampagne">Créer & Activer</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" 
+     *ngIf="showParentModal" 
+     (click)="closeParentModal()"
+     (keydown.escape)="closeParentModal()"
+     role="dialog"
+     aria-modal="true"
+     aria-label="Gestion parent">
+
+  <div class="modal"
+       #parentModalRef
+       (click)="$event.stopPropagation()"
+       (keydown)="onParentModalKeydown($event)"
+       role="document">
+
+    <div class="modal-header">
+      <h3>{{ isEditParent ? 'Modifier Parent' : 'Ajouter Parent' }}</h3>
+      <button class="modal-close" (click)="closeParentModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="parent-nom-prenom">Nom & Prénom</label>
+        <input id="parent-nom-prenom"
+               type="text" 
+               [(ngModel)]="parentForm.nomPrenom" />
+      </div>
+
+      <div class="form-group">
+        <label for="parent-matricule">Matricule</label>
+        <input id="parent-matricule"
+               type="text" 
+               [(ngModel)]="parentForm.matricule" />
+      </div>
+
+      <div class="form-group">
+        <label for="parent-statut">Statut</label>
+        <select id="parent-statut"
+                [(ngModel)]="parentForm.utilise">
+          <option [ngValue]="0">Disponible (0)</option>
+          <option [ngValue]="1">Utilisé (1)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="parent-autorises">Autorisés</label>
+        <input id="parent-autorises"
+               type="number" 
+               [(ngModel)]="parentForm.autorises" 
+               min="0" />
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="closeParentModal()">Annuler</button>
+      <button class="btn btn-primary" (click)="saveParent()">
+        {{ isEditParent ? 'Modifier' : 'Ajouter' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+  <!-- ===== MODAL: ABSENCES ===== -->
+  <!-- Modal overlay — ligne 1969 -->
+<div class="modal-overlay" 
+     *ngIf="showAbsenceModal" 
+     (click)="closeAbsenceModal()"
+     (keydown.escape)="closeAbsenceModal()"
+     role="dialog"
+     aria-modal="true"
+     aria-label="Gestion absences">
+
+  <!-- Modal — ligne 1970 -->
+  <div class="modal modal-absence" 
+       (click)="$event.stopPropagation()"
+       (keydown)="onAbsenceModalKeydown($event)"
+       role="document">
+      <div class="modal-header">
+        <h3>Gérer les absences — {{ editingPresenceRow?.nom }}</h3>
+        <button class="modal-close" (click)="closeAbsenceModal()">✕</button>
+      </div>
+      <div class="modal-body" *ngIf="editingPresenceRow">
+        <div class="absence-summary">
+          <div class="absence-summary-item">
+            <span class="absence-key">Durée contrat</span>
+            <span class="absence-val">{{ editingPresenceRow.dureeContrat }} jours</span>
+          </div>
+          <div class="absence-summary-item">
+            <span class="absence-key">Taux journalier</span>
+            <span class="absence-val">{{ presenceConfig.tauxJournalier }} DT</span>
+          </div>
+          <div class="absence-summary-item">
+            <span class="absence-key">Salaire brut</span>
+            <span class="absence-val">{{ editingPresenceRow.dureeContrat * presenceConfig.tauxJournalier }} DT</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+        <label for="absence-jours">Nombre de jours d'absence</label>
+        <div class="absence-counter">
+          <button class="counter-btn" (click)="decrementAbsence()">−</button>
+          <input id="absence-jours"
+                 type="number"
+                 [(ngModel)]="editingPresenceRow.absences"
+                 (ngModelChange)="recalculerLigne(editingPresenceRow)"
+                 min="0"
+                 [max]="editingPresenceRow.dureeContrat" />
+          <button class="counter-btn" (click)="incrementAbsence()">+</button>
+        </div>
+      
+      
+
+          
+        </div>
+
+        <div class="absence-calc-preview">
+          <div class="calc-row">
+            <span>Jours travaillés</span>
+            <strong>{{ editingPresenceRow.dureeContrat - editingPresenceRow.absences }}</strong>
+          </div>
+          <div class="calc-row highlight">
+            <span>Montant net à payer</span>
+            <strong>{{ (editingPresenceRow.dureeContrat - editingPresenceRow.absences) * presenceConfig.tauxJournalier | number:'1.3-3' }} DT</strong>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="closeAbsenceModal()">Annuler</button>
+        <button class="btn btn-primary" (click)="saveAbsence()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <!-- ===== MODAL: UPLOAD STRUCTURES FILE ===== -->
+  
+
+  <!-- ===== MODAL: EDIT STRUCTURE ===== -->
+  <div class="modal-overlay" 
+     *ngIf="showEditStructureModal" 
+     (click)="closeEditStructureModal()"
+     (keydown.escape)="closeEditStructureModal()"
+     role="dialog"
+     aria-modal="true"
+     aria-label="Modifier la structure">
+
+  <div class="modal" 
+       #editStructureModalRef
+       (click)="$event.stopPropagation()"
+       (keydown)="onEditStructureModalKeydown($event)"
+       role="document">
+
+    <div class="modal-header">
+      <h3>Modifier la Structure</h3>
+      <button class="modal-close" (click)="closeEditStructureModal()">✕</button>
+    </div>
+
+    <div class="modal-body" *ngIf="editingStructure">
+
+      <!-- Nom -->
+      <div class="form-group">
+        <label for="structure-nom">Nom de la structure</label>
+        <input id="structure-nom"
+               type="text" 
+               [(ngModel)]="editingStructure.nom" />
+      </div>
+
+      <div class="form-row">
+
+        <!-- Type -->
+        <div class="form-group">
+          <label for="structure-type">Type</label>
+          <select id="structure-type"
+                  [(ngModel)]="editingStructure.type">
+            <option value="ESPACE_COMMERCIAL">Espace Commercial (EC)</option>
+            <option value="CENTER_TECHNIQUE">Centre Technique (CT)</option>
+            <option value="STRUCTURE_CENTRALE">Structure Centrale (SC)</option>
+          </select>
+        </div>
+
+        <!-- Direction -->
+        <div class="form-group">
+          <label for="structure-direction">Direction d'affectation</label>
+          <select id="structure-direction"
+                  [(ngModel)]="editingStructure.region">
+            <option *ngFor="let g of gouvernorats" [value]="g.nom">{{ g.nom }}</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="form-row">
+
+        <!-- Autorisés -->
+        <div class="form-group">
+          <label for="structure-autorises">Saisonniers autorisés</label>
+          <input id="structure-autorises"
+                 type="number" 
+                 [(ngModel)]="editingStructure.autorises" 
+                 min="0" />
+        </div>
+
+        <!-- Recrutés -->
+        <div class="form-group">
+          <label for="structure-recrutes">Saisonniers recrutés</label>
+          <input id="structure-recrutes"
+                 type="number" 
+                 [(ngModel)]="editingStructure.recrutes" 
+                 min="0" />
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="closeEditStructureModal()">Annuler</button>
+      <button class="btn btn-primary" (click)="saveEditStructure()">Enregistrer</button>
+    </div>
+
+  </div>
+</div>
+
+  <!-- ===== MODAL: AVERTISSEMENT CAMPAGNE ACTIVE ===== -->
+<div class="modal-overlay" 
+     *ngIf="showActiveCampagneWarning" 
+     (click)="fermerWarning()"
+     (keydown.escape)="fermerWarning()"
+     role="dialog"
+     aria-modal="true"
+     aria-label="Avertissement campagne active">
+
+  <div class="modal modal-warning" 
+       (click)="$event.stopPropagation()"
+       (keydown)="onWarningModalKeydown($event)"
+       role="document">
+
+    <div class="modal-header">
+      <h3>⚠️ Campagne active existante</h3>
+      <button class="modal-close" (click)="fermerWarning()">✕</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="warning-icon-wrap">
+        <svg viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="30" fill="rgba(245,158,11,0.12)" stroke="#F59E0B" stroke-width="2"/>
+          <path d="M32 18v18" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="32" cy="44" r="2.5" fill="#F59E0B"/>
+        </svg>
+      </div>
+
+      <p class="warning-title">Une campagne est déjà active</p>
+      <p class="warning-message">
+        La campagne <strong>« {{ activeCampagneNom }} »</strong> est actuellement active.
+        Il ne peut y avoir qu'une seule campagne active à la fois.
+      </p>
+
+      <div class="warning-options">
+
+        <!-- Option 1 — ligne 2224 -->
+        <div class="warning-option" 
+             (click)="cloturerEtActiver()"
+             (keydown.enter)="cloturerEtActiver()"
+             (keydown.space)="cloturerEtActiver()"
+             tabindex="0"
+             role="button"
+             aria-label="Clôturer la campagne active et activer la nouvelle">
+          <div class="warning-option-icon danger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </div>
+          <div class="warning-option-text">
+            <strong>Clôturer et activer</strong>
+            <span>Clôturer la campagne active et activer la nouvelle</span>
+          </div>
+        </div>
+
+        <!-- Option 2 — ligne 2236 -->
+        <div class="warning-option" 
+             (click)="saveCampagne(false); fermerWarning()"
+             (keydown.enter)="saveCampagne(false); fermerWarning()"
+             (keydown.space)="saveCampagne(false); fermerWarning()"
+             tabindex="0"
+             role="button"
+             aria-label="Enregistrer la campagne en brouillon sans l'activer">
+          <div class="warning-option-icon info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+            </svg>
+          </div>
+          <div class="warning-option-text">
+            <strong>Enregistrer en brouillon</strong>
+            <span>Créer la campagne sans l'activer</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="fermerWarning()">Annuler</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== MODAL: VOIR CAMPAGNE ===== -->
+<div class="modal-overlay" *ngIf="showViewModal" (click)="fermerVoirModal()">
+  <div class="modal modal-view" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <span class="view-modal-dot" [ngClass]="viewingCampagne?.statut"></span>
+        {{ viewingCampagne?.nom }}
+      </h3>
+      <button class="modal-close" (click)="fermerVoirModal()">✕</button>
+    </div>
+    <div class="modal-body" *ngIf="viewingCampagne">
+
+      <!-- Statut + Code -->
+      <div class="view-top-row">
+        <span class="status-badge" [ngClass]="viewingCampagne.statut">
+          {{ viewingCampagne.statutLabel }}
+        </span>
+        <span class="view-code">{{ viewingCampagne.code }}</span>
+      </div>
+
+      <!-- Infos principales -->
+      <div class="view-info-grid">
+        <div class="view-info-card">
+          <div class="view-info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div>
+            <span class="view-info-label">Date de début</span>
+            <span class="view-info-val">{{ viewingCampagne.dateDebut }}</span>
+          </div>
+        </div>
+
+        <div class="view-info-card">
+          <div class="view-info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div>
+            <span class="view-info-label">Date de fin</span>
+            <span class="view-info-val">{{ viewingCampagne.dateFin }}</span>
+          </div>
+        </div>
+
+        <div class="view-info-card">
+          <div class="view-info-icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div>
+            <span class="view-info-label">Candidatures</span>
+            <span class="view-info-val highlight-blue">{{ viewingCampagne.candidatures }}</span>
+          </div>
+        </div>
+
+        
+      </div>
+
+      <!-- Description -->
+      <div class="view-description" *ngIf="viewingCampagne.description">
+        <span class="view-desc-label">Description</span>
+        <p class="view-desc-text">{{ viewingCampagne.description }}</p>
+      </div>
+
+      <!-- Candidatures list -->
+      <div class="view-candidatures-section" *ngIf="viewingCampagneCandidatures.length > 0">
+        <div class="view-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               style="width:16px;height:16px">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+          </svg>
+          Candidatures ({{ viewingCampagneCandidatures.length }})
+        </div>
+        <div class="view-cand-list">
+          <div class="view-cand-item" *ngFor="let cand of viewingCampagneCandidatures">
+            <div class="user-avatar-sm">
+              {{ cand.saisonnier.nom[0] }}{{ cand.saisonnier.prenom[0] }}
+            </div>
+            <div class="view-cand-info">
+              <span class="name-primary">{{ cand.saisonnier.nom }} {{ cand.saisonnier.prenom }}</span>
+              <span class="name-secondary">{{ cand.saisonnier.cin }} — {{ cand.saisonnier.region.nom }}</span>
+            </div>
+            <span class="status-badge" [ngClass]="cand.statut.toLowerCase()">{{ cand.statut }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-empty-cand" *ngIf="viewingCampagneCandidatures.length === 0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+             style="width:32px;height:32px;color:var(--text-muted)">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+        </svg>
+        <span>Aucune candidature pour cette campagne</span>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="fermerVoirModal()">Fermer</button>
+     
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: MODIFIER CAMPAGNE ===== -->
+<!-- ===== MODAL EDIT CAMPAGNE ===== -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="fermerEditModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Modifier la Campagne</h3>
+      <button class="modal-close" (click)="fermerEditModal()">✕</button>
+    </div>
+    <div class="modal-body" *ngIf="editingCampagne">
+
+      <div class="form-group">
+        <label for="edit-nom">Nom de la campagne *</label>
+        <input id="edit-nom" type="text" [(ngModel)]="editingCampagne.nom" />
+      </div>
+
+      <div class="form-group">
+        <label for="edit-code">Code campagne</label>
+        <input id="edit-code" type="text" [(ngModel)]="editingCampagne.code" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="edit-date-debut">Date de début *</label>
+          <input id="edit-date-debut" type="date" [min]="today" [(ngModel)]="editingCampagne.dateDebut" />
+        </div>
+        <div class="form-group">
+          <label for="edit-date-fin">Date de fin *</label>
+          <input id="edit-date-fin" type="date" [min]="editingCampagne.dateDebut" [(ngModel)]="editingCampagne.dateFin" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="edit-description">Description</label>
+        <textarea id="edit-description" rows="3" [(ngModel)]="editingCampagne.description"></textarea>
+      </div>
+
+      <!-- Changer statut -->
+      <div class="form-group">
+        <label>Statut</label>
+        <div class="statut-selector" role="group" aria-label="Sélection du statut">
+          <div class="statut-option"
+               role="button"
+               tabindex="0"
+               [class.selected]="editingCampagne.statut === 'brouillon'"
+               (click)="changerStatutCampagne('BROUILLON')"
+               (keydown.enter)="changerStatutCampagne('BROUILLON')"
+               (keydown.space)="changerStatutCampagne('BROUILLON')">
+            <span class="campagne-dot brouillon"></span>
+            Brouillon
+          </div>
+          <div class="statut-option"
+               role="button"
+               tabindex="0"
+               [class.selected]="editingCampagne.statut === 'active'"
+               (click)="changerStatutCampagne('ACTIVE')"
+               (keydown.enter)="changerStatutCampagne('ACTIVE')"
+               (keydown.space)="changerStatutCampagne('ACTIVE')">
+            <span class="campagne-dot active"></span>
+            Active
+          </div>
+          <div class="statut-option"
+               role="button"
+               tabindex="0"
+               [class.selected]="editingCampagne.statut === 'termine'"
+               (click)="changerStatutCampagne('CLOTUREE')"
+               (keydown.enter)="changerStatutCampagne('CLOTUREE')"
+               (keydown.space)="changerStatutCampagne('CLOTUREE')">
+            <span class="campagne-dot termine"></span>
+            Clôturée
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="fermerEditModal()">Annuler</button>
+      <button class="btn btn-primary" (click)="sauvegarderModificationCampagne()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+        </svg>
+        Enregistrer
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== MODAL DOSSIER CANDIDAT ===== -->
+<div class="modal-overlay" *ngIf="showDossierModal">
+  <div class="modal-box wide" (click)="$event.stopPropagation()">
+
+    <div class="modal-head">
+      <div class="modal-title-grp">
+        <div class="modal-icon blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <div>
+          <h2>Dossier candidat</h2>
+          <p>{{ selectedCandidature?.saisonnier.prenom }} {{ selectedCandidature?.saisonnier.nom }}</p>
+        </div>
+      </div>
+      <button class="modal-close-btn" (click)="closeDossier()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-content">
+      <div class="dossier-grid">
+
+        <!-- Colonne infos saisonnier -->
+        <div class="dossier-col">
+
+          <h4 class="col-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Informations du parent
+          </h4>
+
+          <div class="field-group">
+            <label for="parent-nom-prenom">Parent (nom & prénom)</label>
+            <input id="parent-nom-prenom"
+                   [(ngModel)]="selectedCandidature.saisonnier.nomPrenomParent"
+                   [class.has-error]="errors['nomPrenomParent']"
+                   placeholder="Nom du parent">
+            <span class="field-error" *ngIf="errors['nomPrenomParent']">{{ errors['nomPrenomParent'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="parent-matricule">Matricule parent</label>
+            <input id="parent-matricule"
+                   [(ngModel)]="selectedCandidature.saisonnier.matriculeParent"
+                   [class.has-error]="errors['matriculeParent']"
+                   placeholder="Matricule">
+            <span class="field-error" *ngIf="errors['matriculeParent']">{{ errors['matriculeParent'] }}</span>
+          </div>
+
+          <h4 class="col-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Informations du saisonnier
+          </h4>
+
+          <div class="field-group">
+            <label for="saisonnier-prenom">Prénom</label>
+            <input id="saisonnier-prenom"
+                   [(ngModel)]="selectedCandidature.saisonnier.prenom"
+                   [class.has-error]="errors['prenom']"
+                   placeholder="Prénom">
+            <span class="field-error" *ngIf="errors['prenom']">{{ errors['prenom'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-nom">Nom</label>
+            <input id="saisonnier-nom"
+                   [(ngModel)]="selectedCandidature.saisonnier.nom"
+                   [class.has-error]="errors['nom']"
+                   placeholder="Nom">
+            <span class="field-error" *ngIf="errors['nom']">{{ errors['nom'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-email">Email</label>
+            <input id="saisonnier-email"
+                   [(ngModel)]="selectedCandidature.saisonnier.email"
+                   [class.has-error]="errors['email']"
+                   placeholder="Email">
+            <span class="field-error" *ngIf="errors['email']">{{ errors['email'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-cin">CIN</label>
+            <input id="saisonnier-cin"
+                   [(ngModel)]="selectedCandidature.saisonnier.cin"
+                   [class.has-error]="errors['cin']"
+                   placeholder="CIN"
+                   type="text"
+                   maxlength="8"
+                   (keypress)="onlyDigits($event)"/>
+            <span class="field-error" *ngIf="errors['cin']">{{ errors['cin'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-telephone">Téléphone</label>
+            <input id="saisonnier-telephone"
+                   [(ngModel)]="selectedCandidature.saisonnier.telephone"
+                   [class.has-error]="errors['telephone']"
+                   placeholder="Téléphone"
+                   type="text"
+                   maxlength="8"
+                   (keypress)="onlyDigits($event)">
+            <span class="field-error" *ngIf="errors['telephone']">{{ errors['telephone'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-rib">RIB</label>
+            <input id="saisonnier-rib"
+                   [(ngModel)]="selectedCandidature.saisonnier.rib"
+                   [class.has-error]="errors['rib']"
+                   placeholder="RIB">
+            <span class="field-error" *ngIf="errors['rib']">{{ errors['rib'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-region">Direction d'affectation</label>
+            <select id="saisonnier-region"
+                    [(ngModel)]="selectedCandidature.saisonnier.region.id"
+                    [class.has-error]="errors['region']">
+              <option *ngFor="let r of regions" [value]="r.id">{{ r.nom }}</option>
+            </select>
+            <span class="field-error" *ngIf="errors['region']">{{ errors['region'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-structure">Structure</label>
+            <select id="saisonnier-structure"
+                    [(ngModel)]="selectedStructureId"
+                    (ngModelChange)="onStructureChange()">
+              <option [ngValue]="null">— Toutes les structures —</option>
+              <optgroup label="🏪 Espaces Commerciaux" *ngIf="structuresEC.length > 0">
+                <option *ngFor="let s of structuresEC"
+                        [ngValue]="s.id"
+                        [disabled]="!s.disponible">
+                  {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
+                  {{ s.disponible ? '' : '⛔ COMPLET' }}
+                </option>
+              </optgroup>
+              <optgroup label="💻 Centres Technologiques" *ngIf="structuresCT.length > 0">
+                <option *ngFor="let s of structuresCT"
+                        [ngValue]="s.id"
+                        [disabled]="!s.disponible">
+                  {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
+                  {{ s.disponible ? '' : '⛔ COMPLET' }}
+                </option>
+              </optgroup>
+              <optgroup label="🏢 Structures Centrales" *ngIf="structuresSC.length > 0">
+                <option *ngFor="let s of structuresSC"
+                        [ngValue]="s.id"
+                        [disabled]="!s.disponible">
+                  {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
+                  {{ s.disponible ? '' : '⛔ COMPLET' }}
+                </option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-niveau">Niveau d'étude</label>
+            <select id="saisonnier-niveau"
+                    [(ngModel)]="selectedCandidature.saisonnier.niveauEtude"
+                    [class.has-error]="errors['niveauEtude']">
+              <option value="">— Choisir —</option>
+              <option value="BAC">BAC</option>
+              <option value="BAC+1">Bac+1</option>
+              <option value="BAC+2">Bac+2</option>
+              <option value="BAC+3">Bac+3</option>
+              <option value="BAC+4">Bac+4</option>
+              <option value="BAC+5">Bac+5</option>
+              <option value="BAC+6">Bac+6</option>
+            </select>
+            <span class="field-error" *ngIf="errors['niveauEtude']">{{ errors['niveauEtude'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-diplome">Diplôme</label>
+            <input id="saisonnier-diplome"
+                   [(ngModel)]="selectedCandidature.saisonnier.diplome"
+                   [class.has-error]="errors['diplome']"
+                   placeholder="Diplôme">
+            <span class="field-error" *ngIf="errors['diplome']">{{ errors['diplome'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="saisonnier-specialite">Spécialité</label>
+            <input id="saisonnier-specialite"
+                   [(ngModel)]="selectedCandidature.saisonnier.specialiteDiplome"
+                   [class.has-error]="errors['specialiteDiplome']"
+                   placeholder="Spécialité">
+            <span class="field-error" *ngIf="errors['specialiteDiplome']">{{ errors['specialiteDiplome'] }}</span>
+          </div>
+
+         
+
+        </div>
+
+        <!-- Colonne candidature -->
+        <div class="dossier-col">
+          <h4 class="col-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            Candidature
+          </h4>
+
+          <div class="field-group readonly">
+            <label>Date de dépôt</label>
+            <div class="readonly-val">{{ selectedCandidature?.dateDepot | date:'dd/MM/yyyy' }}</div>
+          </div>
+
+          <div class="field-group">
+            <label for="candidature-statut">Statut</label>
+            <select id="candidature-statut"
+                    [(ngModel)]="selectedCandidature.statut"
+                    [class.has-error]="errors['statut']">
+              <option value="">— Choisir —</option>
+              <option value="EN_ATTENTE">En attente</option>
+              <option value="ACCEPTEE">Acceptée</option>
+              <option value="REJETEE">Refusée</option>
+            </select>
+            <span class="field-error" *ngIf="errors['statut']">{{ errors['statut'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="candidature-mois">Mois de travail</label>
+            <select id="candidature-mois"
+                    [(ngModel)]="selectedCandidature.saisonnier.moisTravail"
+                    [class.has-error]="errors['moisTravail']">
+              <option value="">— Choisir —</option>
+              <option value="JUILLET">Juillet</option>
+              <option value="AOUT">Août</option>
+              <option value="JUILLET_AOUT">Juillet + Août</option>
+            </select>
+            <span class="field-error" *ngIf="errors['moisTravail']">{{ errors['moisTravail'] }}</span>
+          </div>
+
+          <div class="field-group">
+            <label for="candidature-commentaire">Commentaire RH</label>
+            <textarea id="candidature-commentaire"
+                      [(ngModel)]="selectedCandidature.commentaire"
+                      rows="4"
+                      placeholder="Ajouter un commentaire..."></textarea>
+          </div>
+
+          <!-- Documents -->
+          <h4 class="col-title" style="margin-top:20px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Documents joints
+          </h4>
+          <div class="docs-list">
+            <a *ngFor="let doc of selectedCandidature?.documents"
+               [href]="doc.url" target="_blank" class="doc-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <span>{{ doc.nomFichier }}</span>
+              <span class="doc-type">{{ doc.type }}</span>
+            </a>
+            <p class="no-docs" *ngIf="!selectedCandidature?.documents?.length">Aucun document joint.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-cancel-modal" (click)="closeDossier()">Fermer</button>
+      <button class="btn-save-modal" (click)="updateCandidature()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Enregistrer
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-notification" *ngIf="showToastFlag">
+  {{ toastMessage }}
+</div>
+
+</div>
