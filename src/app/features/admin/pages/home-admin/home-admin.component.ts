@@ -1529,7 +1529,7 @@ if (campagneMemeAnnee) {
     this.stats.totalCandidatures = candidatures.length;
     this.stats.candidaturesAcceptees = candidatures.filter(c => c.statut === 'ACCEPTEE').length;
     this.stats.candidaturesEnAttente = candidatures.filter(c => c.statut === 'EN_ATTENTE').length;
-    this.stats.candidaturesRefusees = candidatures.filter(c => c.statut === 'REFUSEE').length;
+    this.stats.candidaturesRefusees = candidatures.filter(c => c.statut === 'REJETEE').length;
 
 
     const campagneActive = this.campagnes?.find(c => c.statut === 'active');
