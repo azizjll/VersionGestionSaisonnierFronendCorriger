@@ -1413,7 +1413,6 @@
           <line x1="12" y1="32" x2="22" y2="32" stroke="#1E8BD4" stroke-width="1.2" stroke-linecap="round"/>
         </svg>
       </div>
-      <div class="memo-doc-year">سنة 2025</div>
 
       <!-- Meta infos -->
       <div class="memo-meta-list">
@@ -1421,10 +1420,7 @@
           <span class="memo-meta-key">النوع</span>
           <span class="memo-meta-val">مذكرة إدارية</span>
         </div>
-        <div class="memo-meta-item">
-          <span class="memo-meta-key">السنة</span>
-          <span class="memo-meta-val">2025</span>
-        </div>
+        
         <div class="memo-meta-item">
           <span class="memo-meta-key">الصيغة</span>
           <span class="memo-meta-val">PDF</span>
@@ -1573,14 +1569,7 @@
           <span class="memo-viewer-doc-type">{{ memoDocumentSelectionne.type }}</span>
         </div>
         <div class="memo-viewer-topbar-actions">
-          <button class="viewer-topbar-btn"
-                  title="تحميل"
-                  (click)="ouvrirLienDoc(memoDocumentSelectionne.url)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-            </svg>
-            تحميل
-          </button>
+          
           <button class="viewer-topbar-btn"
                   title="فتح في نافذة جديدة"
                   (click)="ouvrirLienDoc(memoDocumentSelectionne.url)">

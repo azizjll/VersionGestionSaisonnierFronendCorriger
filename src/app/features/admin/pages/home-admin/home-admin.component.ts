@@ -1133,24 +1133,42 @@ if (campagneMemeAnnee) {
   }
 
   onMemoDocumentUpload(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file || !this.memoSelectedCampagneId) return;
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file || !this.memoSelectedCampagneId) return;
 
-    const nom = file.name.replace(/\.[^.]+$/, '');
-    this.docCampagneService.uploadDocument(
-      this.memoSelectedCampagneId,
-      nom,
-      'مذكرة الإنتداب',
-      file
-    ).subscribe({
-      next: doc => {
-        this.memoDocumentsCampagne.push(doc);
-        this.showToast('✅ Document ajouté');
-        (event.target as HTMLInputElement).value = '';
-      },
-      error: () => this.showToast('❌ Erreur upload')
-    });
+  // Validation du type
+  const typesAutorises = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+  if (!typesAutorises.includes(file.type)) {
+    this.showToast('❌ Seuls les fichiers PDF et images (JPG, PNG, WEBP) sont autorisés');
+    input.value = '';
+    return;
   }
+
+  // Validation de la taille (10 Mo max, adapte si besoin)
+  const tailleMaxMo = 10;
+  if (file.size > tailleMaxMo * 1024 * 1024) {
+    this.showToast(`❌ Fichier trop volumineux (max ${tailleMaxMo} Mo)`);
+    input.value = '';
+    return;
+  }
+
+  const nom = file.name.replace(/\.[^.]+$/, '');
+
+  this.docCampagneService.uploadDocument(
+    this.memoSelectedCampagneId,
+    nom,
+    'مذكرة الإنتداب',
+    file
+  ).subscribe({
+    next: doc => {
+      this.memoDocumentsCampagne.push(doc);
+      this.showToast('✅ Document ajouté');
+      input.value = '';
+    },
+    error: () => this.showToast('❌ Erreur upload')
+  });
+}
 
   cloturerEtActiver(): void {
     const actives = this.campagnes.filter(c => c.statut === 'active');

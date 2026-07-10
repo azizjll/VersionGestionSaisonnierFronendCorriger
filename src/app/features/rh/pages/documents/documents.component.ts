@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { StructureService } from 'src/app/structure.service';
 import { EtatRHService } from 'src/app/service/etat-rh.service';
 import { environment } from 'src/environments/environment';
+import { Campagne, CampagneService } from 'src/app/services/campagne.service';
 
 export interface Structure {
   name: string;
@@ -61,14 +62,19 @@ loadingDocs = false;
 isUploadingEtat = false;
 etatUploadSuccess = false;
 
+  campagneActive: Campagne | null = null; // ← pour garder la campagne active en mémoire
+
+
   // ── Constructor : injection DocumentService ───────────
   constructor(
    private readonly sanitizer: DomSanitizer,
     private readonly documentService: DocumentService,
       private readonly documentCampagneService: DocumentCampagneService ,
       private readonly authService: AuthService,
-        private readonly structureService: StructureService,  // ← ajouter
-        private readonly etatRHService: EtatRHService             
+        private readonly structureService: StructureService,  
+        private readonly etatRHService: EtatRHService ,
+            private readonly campagneService: CampagneService // ← ajouter
+            
 
 
   ) {}
@@ -150,12 +156,26 @@ uploadEtat(file: File): void {
 
   loadDocumentsCampagne(): void {
   this.loadingDocs = true;
-  // Adapter l'id campagne active selon votre logique
-  const campagneId = 1;
-  this.documentCampagneService.getDocumentsByCampagne(campagneId).subscribe({
-    next: (data) => {
-      this.documentsCampagne = data;
-      this.loadingDocs = false;
+
+  this.campagneService.getCampagnesActives().subscribe({
+    next: (campagnes) => {
+      if (campagnes && campagnes.length > 0) {
+        // On prend la première campagne active (adapte si tu veux gérer plusieurs campagnes actives)
+        this.campagneActive = campagnes[0];
+        const campagneId = this.campagneActive.id;
+
+        this.documentCampagneService.getDocumentsByCampagne(campagneId).subscribe({
+          next: (data) => {
+            this.documentsCampagne = data;
+            this.loadingDocs = false;
+          },
+          error: () => { this.loadingDocs = false; }
+        });
+      } else {
+        // Aucune campagne active trouvée
+        this.documentsCampagne = [];
+        this.loadingDocs = false;
+      }
     },
     error: () => { this.loadingDocs = false; }
   });
