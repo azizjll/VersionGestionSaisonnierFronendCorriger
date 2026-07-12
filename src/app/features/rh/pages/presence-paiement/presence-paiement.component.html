@@ -70,7 +70,7 @@
   <select id="structure-select"
           [(ngModel)]="selectedStructureId"
           (ngModelChange)="onStructureChange()"
-          style="width: 220px">
+          style="width: 370px">
 
     <option [ngValue]="null">— Toutes les structures —</option>
 
@@ -78,8 +78,8 @@
       <option *ngFor="let s of structuresEC"
               [ngValue]="s.id"
               [disabled]="!s.disponible">
-        {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
-        {{ s.disponible ? '' : '⛔ COMPLET' }}
+        {{ s.nom }} — J:{{ s.recrutesJuillet }}/{{ s.autorisesJuillet }} · A:{{ s.recrutesAout }}/{{ s.autorisesAout }}
+  {{ s.disponible ? '' : '⛔' }}
       </option>
     </optgroup>
 
@@ -87,8 +87,16 @@
       <option *ngFor="let s of structuresCT"
               [ngValue]="s.id"
               [disabled]="!s.disponible">
-        {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
-        {{ s.disponible ? '' : '⛔ COMPLET' }}
+        {{ s.nom }} — J:{{ s.recrutesJuillet }}/{{ s.autorisesJuillet }} · A:{{ s.recrutesAout }}/{{ s.autorisesAout }}
+  {{ s.disponible ? '' : '⛔' }}
+      </option>
+    </optgroup>
+    <optgroup label="🏢 Structures Centrales" *ngIf="structuresSC.length > 0">
+      <option *ngFor="let s of structuresSC"
+              [ngValue]="s.id"
+              [disabled]="!s.disponible">
+        {{ s.nom }} — J:{{ s.recrutesJuillet }}/{{ s.autorisesJuillet }} · A:{{ s.recrutesAout }}/{{ s.autorisesAout }}
+  {{ s.disponible ? '' : '⛔' }}
       </option>
     </optgroup>
 

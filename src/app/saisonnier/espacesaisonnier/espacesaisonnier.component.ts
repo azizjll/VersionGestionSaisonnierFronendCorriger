@@ -549,21 +549,46 @@ openCandidatureFromGuide(): void {
     };
   }
 
-  get structuresEC(): StructureDTO[] {
-    return this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL');
-  }
+  // ── Helper commun : ajoute disponible/autorises/recrutes selon le mois choisi ──
+private avecDispoParMois(liste: any[]): any[] {
+  const mois = this.form.moisTravail;
+  return liste.map(s => {
+    const autorises = mois === 'JUILLET' ? s.autorisesJuillet : s.autorisesAout;
+    const recrutes   = mois === 'JUILLET' ? s.recrutesJuillet  : s.recrutesAout;
+    return {
+      ...s,
+      autorises,
+      recrutes,
+      disponible: mois ? recrutes < autorises : true // si mois pas encore choisi, ne pas bloquer visuellement
+    };
+  });
+}
 
-  get structuresCT(): StructureDTO[] {
-    return this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE');
-  }
+get structuresEC(): StructureDTO[] {
+  return this.avecDispoParMois(
+    this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL')
+  );
+}
 
-  get structuresSC(): StructureDTO[] {
-    return this.structures.filter(s => s.type === 'STRUCTURE_CENTRALE');
-  }
+get structuresCT(): StructureDTO[] {
+  return this.avecDispoParMois(
+    this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE')
+  );
+}
 
-  get toutesCompletes(): boolean {
-    return this.structures.length > 0 && this.structures.every(s => !s.disponible);
-  }
+get structuresSC(): StructureDTO[] {
+  return this.avecDispoParMois(
+    this.structures.filter(s => s.type === 'STRUCTURE_CENTRALE')
+  );
+}
+
+get toutesCompletes(): boolean {
+  const toutes = [...this.structuresEC, ...this.structuresCT, ...this.structuresSC];
+  return toutes.length > 0 && toutes.every(s => !s.disponible);
+}
+onMoisTravailChange(): void {
+  this.form.structureId = null; // force à re-choisir une structure valide pour ce mois
+}
 
   get iltizamAccepted(): boolean {
   return sessionStorage.getItem('iltizamAccepted') === 'true';
@@ -796,6 +821,8 @@ openCandidatureFromGuide(): void {
     }
   });
 }
+
+
 
 
 

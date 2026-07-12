@@ -728,6 +728,7 @@
   <label>Mois de travail *</label>
   <select [(ngModel)]="form.moisTravail" name="moisTravail"
           #moisTravail="ngModel" required
+          (ngModelChange)="onMoisTravailChange()"
           [class.input-error]="moisTravail.invalid && moisTravail.touched" [style.color]="form.moisTravail ? 'inherit' : '#999'">
     <option [ngValue]="null" disabled style="color:#999">Choisir le mois</option>
     <option value="JUILLET">Juillet</option>

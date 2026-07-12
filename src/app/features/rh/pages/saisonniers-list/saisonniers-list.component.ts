@@ -91,17 +91,46 @@ structures: StructureDTO[] = [];
   showAffectModal = false;
   selectedStructureId: number | null = null;
 
-  get structuresEC(): StructureDTO[] {
-  return this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL');
+  private avecDispo(liste: StructureDTO[]): any[] {
+  const mois = this.selectedCandidature?.saisonnier?.moisTravail;
+  const structureActuelleId = this.selectedCandidatureStructure?.id;
+
+  return liste.map(s => {
+    let disponible: boolean;
+
+    if (mois === 'JUILLET') {
+      disponible = s.recrutesJuillet < s.autorisesJuillet;
+    } else if (mois === 'AOUT') {
+      disponible = s.recrutesAout < s.autorisesAout;
+    } else if (mois === 'JUILLET_AOUT') {
+      disponible = (s.recrutesJuillet < s.autorisesJuillet) && (s.recrutesAout < s.autorisesAout);
+    } else {
+      disponible = (s.recrutesJuillet < s.autorisesJuillet) || (s.recrutesAout < s.autorisesAout);
+    }
+
+    // ✅ la structure déjà affectée au candidat reste toujours sélectionnable pour lui
+    if (Number(s.id) === Number(structureActuelleId)) {
+      disponible = true;
+    }
+
+    return { ...s, disponible };
+  });
+}
+get structuresEC(): StructureDTO[] {
+  return this.avecDispo(this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL'));
 }
 
 get structuresCT(): StructureDTO[] {
-  return this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE');
+  return this.avecDispo(this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE'));
 }
 
-// ← getter pour éviter arrow function dans le template
+get structuresSC(): StructureDTO[] {
+  return this.avecDispo(this.structures.filter(s => s.type === 'STRUCTURE_CENTRALE'));
+}
+
 get toutesCompletes(): boolean {
-  return this.structures.length > 0 && this.structures.every(s => !s.disponible);
+  const toutes = [...this.structuresEC, ...this.structuresCT, ...this.structuresSC];
+  return toutes.length > 0 && toutes.every(s => !s.disponible);
 }
 
   constructor(
@@ -240,6 +269,9 @@ setStructureFilter(nom: string): void {
   });
 }
 
+compareStructureIds = (a: number | null, b: number | null): boolean => {
+  return Number(a) === Number(b);
+};
   openDossier(cand: any): void {
   this.selectedCandidature = { ...cand, saisonnier: { ...cand.saisonnier } };
   this.selectedCandidatureStructure = null;
@@ -247,18 +279,40 @@ setStructureFilter(nom: string): void {
   this.showDossierModal = true;
   this.isLoadingStructure = true;
 
-  // ── Étape 1 : charger les structures de la région du candidat
   const regionId = cand.saisonnier?.region?.id || this.myRegion?.id;
-  this.structureService.getStructuresByRegion(regionId).subscribe({
-    next: (data: StructureDTO[]) => {
-      this.structures = data;
 
-      // ── Étape 2 : récupérer la structure actuelle du candidat
+  this.structureService.getStructuresByRegion(regionId, this.campagneId).subscribe({
+    next: (data: StructureDTO[]) => {
+      this.structures = data.map(s => ({ ...s, id: Number(s.id) }));
+
       this.candidatureService.getStructureByCandidature(cand.id).subscribe({
         next: (st: any) => {
           if (st?.id) {
-            this.selectedCandidatureStructure = st;
-            this.selectedStructureId = st.id;  // ← pré-sélectionner dans le select
+            const stId = Number(st.id);
+
+            // ✅ 1. cherche d'abord par id (cas normal)
+            let structureCorrespondante = this.structures.find(s => Number(s.id) === stId);
+
+            // ✅ 2. si absente (incohérence cross-campagne), cherche par NOM à la place
+            if (!structureCorrespondante) {
+              console.warn(
+                `[openDossier] Structure id=${stId} absente de la campagne ${this.campagneId}. ` +
+                `Tentative de correspondance par nom "${st.nom}".`
+              );
+              structureCorrespondante = this.structures.find(
+                s => s.nom.trim().toLowerCase() === (st.nom || '').trim().toLowerCase()
+              );
+            }
+
+            if (structureCorrespondante) {
+              this.selectedCandidatureStructure = structureCorrespondante;
+              this.selectedStructureId = Number(structureCorrespondante.id);
+            } else {
+              // vraiment aucune correspondance possible → on laisse vide plutôt que d'afficher une fausse entrée
+              console.error(`[openDossier] Aucune structure "${st.nom}" trouvée dans la campagne active.`);
+              this.selectedCandidatureStructure = null;
+              this.selectedStructureId = null;
+            }
           }
           this.isLoadingStructure = false;
         },
@@ -274,7 +328,6 @@ setStructureFilter(nom: string): void {
     }
   });
 }
-
  closeDossier(): void {
   this.showDossierModal = false;
   this.selectedCandidature = null;
@@ -506,8 +559,8 @@ if (this.selectedStructureId) {
         if (this.selectedStructureId &&
             this.selectedStructureId !== this.selectedCandidatureStructure?.id) {
 
-          this.affectationService.affecterSaisonnier(
-            this.selectedCandidature.saisonnier.id,
+          this.affectationService.affecterCandidature(
+              this.selectedCandidature.id,
             this.selectedStructureId,
             this.campagneId
           ).subscribe({
@@ -625,8 +678,8 @@ this.affectationService.getStructuresByRegion(this.myRegion.id).subscribe({
   affecter() {
     if (!this.selectedStructureId || !this.selectedCandidatureForAffect) return;
 
-    this.affectationService.affecterSaisonnier(
-      this.selectedCandidatureForAffect.saisonnier.id,
+    this.affectationService.affecterCandidature(
+      this.selectedCandidatureForAffect.id,
       this.selectedStructureId,
       this.campagneId
     ).subscribe({

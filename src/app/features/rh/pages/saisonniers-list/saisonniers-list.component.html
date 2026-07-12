@@ -301,25 +301,36 @@
       </select>
     </div>
     <div class="field-group">
-      <label for="sais-structure">Structure</label>
-      <select id="sais-structure"
-              [(ngModel)]="selectedStructureId"
-              (ngModelChange)="onStructureChange()">
-        <option [ngValue]="null">— Toutes les structures —</option>
-        <optgroup label="🏪 Espaces Commerciaux" *ngIf="structuresEC.length > 0">
-          <option *ngFor="let s of structuresEC" [ngValue]="s.id" [disabled]="!s.disponible">
-            {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
-            {{ s.disponible ? '' : '⛔ COMPLET' }}
-          </option>
-        </optgroup>
-        <optgroup label="💻 Centres Technologiques" *ngIf="structuresCT.length > 0">
-          <option *ngFor="let s of structuresCT" [ngValue]="s.id" [disabled]="!s.disponible">
-            {{ s.nom }} — {{ s.recrutes }}/{{ s.autorises }}
-            {{ s.disponible ? '' : '⛔ COMPLET' }}
-          </option>
-        </optgroup>
-      </select>
-    </div>
+  <label for="sais-structure">Structure</label>
+  <select id="sais-structure"
+          [(ngModel)]="selectedStructureId"
+          [compareWith]="compareStructureIds"
+          (ngModelChange)="onStructureChange()">
+
+    <option [ngValue]="null">— Toutes les structures —</option>
+
+    <optgroup label="🏪 Espaces Commerciaux" *ngIf="structuresEC.length > 0">
+      <option *ngFor="let s of structuresEC" [ngValue]="s.id" [disabled]="!s.disponible">
+        {{ s.nom }} — J:{{ s.recrutesJuillet }}/{{ s.autorisesJuillet }} · A:{{ s.recrutesAout }}/{{ s.autorisesAout }}
+        {{ s.disponible ? '' : '⛔' }}
+      </option>
+    </optgroup>
+
+    <optgroup label="💻 Centres Technologiques" *ngIf="structuresCT.length > 0">
+      <option *ngFor="let s of structuresCT" [ngValue]="s.id" [disabled]="!s.disponible">
+        {{ s.nom }} — J:{{ s.recrutesJuillet }}/{{ s.autorisesJuillet }} · A:{{ s.recrutesAout }}/{{ s.autorisesAout }}
+        {{ s.disponible ? '' : '⛔' }}
+      </option>
+    </optgroup>
+
+    <optgroup label="🏢 Structures Centrales" *ngIf="structuresSC.length > 0">
+      <option *ngFor="let s of structuresSC" [ngValue]="s.id" [disabled]="!s.disponible">
+        {{ s.nom }} — J:{{ s.recrutesJuillet }}/{{ s.autorisesJuillet }} · A:{{ s.recrutesAout }}/{{ s.autorisesAout }}
+        {{ s.disponible ? '' : '⛔' }}
+      </option>
+    </optgroup>
+  </select>
+</div>
 
     <!-- Formation -->
     <h4 class="col-title" style="margin-top:18px">

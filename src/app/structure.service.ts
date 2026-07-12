@@ -12,6 +12,11 @@ export interface StructureDTO {
   autorises: number;
   recrutes: number;
   disponible: boolean;
+  autorisesJuillet: number;
+  recrutesJuillet: number;
+  autorisesAout: number;
+  recrutesAout: number;
+  
 }
 
 @Injectable({ providedIn: 'root' })

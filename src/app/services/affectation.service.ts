@@ -7,9 +7,10 @@ export interface Structure {
   nom: string;
   type: 'ESPACE_COMMERCIAL' | 'CENTRE_TECHNOLOGIQUE';
   adresse?: string;
-    regionId: number;
+  regionId: number;
   affectations?: any[];
 }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,15 +20,16 @@ export class AffectationService {
 
   constructor(private http: HttpClient) {}
 
-  affecterSaisonnier(
-    saisonnierId: number,
+  // ✅ renommé + candidatureId au lieu de saisonnierId
+  affecterCandidature(
+    candidatureId: number,
     structureId: number,
     campagneId: number
   ): Observable<any> {
 
     return this.http.post(`${this.baseUrl}/assign`, null, {
       params: {
-        saisonnierId: saisonnierId,
+        candidatureId: candidatureId,
         structureId: structureId,
         campagneId: campagneId
       }
@@ -35,12 +37,11 @@ export class AffectationService {
 
   }
 
-    getByRegion(regionId:number):Observable<Structure[]>{
-
-    return this.http.get<Structure[]>(`${this.baseUrl}/region/${regionId}`)
+  getByRegion(regionId: number): Observable<Structure[]> {
+    return this.http.get<Structure[]>(`${this.baseUrl}/region/${regionId}`);
   }
 
-   getStructuresByRegion(regionId: number): Observable<Structure[]> {
+  getStructuresByRegion(regionId: number): Observable<Structure[]> {
     return this.http.get<Structure[]>(`${this.baseUrl}/region/${regionId}`);
   }
 

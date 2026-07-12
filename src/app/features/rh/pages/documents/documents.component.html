@@ -4,7 +4,7 @@
   <div class="page-header">
     <div class="header-left">
       <h1>Documents administratifs</h1>
-      <p>Circulaires, fichiers de structure et ressources RH — Campagne 2025</p>
+      <p>Circulaires, fichiers de structure et ressources RH</p>
     </div>
   </div>
 
@@ -116,12 +116,21 @@
         <span class="gstat-lbl">Centres Techniques</span>
       </div>
       <div class="gstat-card auth">
-        <span class="gstat-num">{{ getTotalAuth() }}</span>
-        <span class="gstat-lbl">Saisonniers autorisés</span>
+        <span class="gstat-num">{{ getTotalAuthJuillet() }}</span>
+        <span class="gstat-lbl">Autorisés Juillet</span>
       </div>
       <div class="gstat-card rec">
-        <span class="gstat-num">{{ getTotalRec() }}</span>
-        <span class="gstat-lbl">Saisonniers recrutés</span>
+        <span class="gstat-num">{{ getTotalRecJuillet() }}</span>
+        <span class="gstat-lbl">Recrutés Juillet</span>
+      </div>
+
+      <div class="gstat-card auth">
+        <span class="gstat-num">{{ getTotalAuthAout() }}</span>
+        <span class="gstat-lbl">Autorisés Août</span>
+      </div>
+      <div class="gstat-card rec">
+        <span class="gstat-num">{{ getTotalRecAout() }}</span>
+        <span class="gstat-lbl">Recrutés Août</span>
       </div>
     </div>
 
@@ -180,61 +189,65 @@
         </div>
 
         <!-- ── TABLEAU RÉCAPITULATIF ── -->
-        <div class="table-wrap" *ngIf="!selectedRegion">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Direction de rattachement</th>
-                <th>Structure / Unité</th>
-                <th>Type</th>
-                
-                <th>Autorisés</th>
-                <th>Recrutés</th>
-                <th>Restants</th>
-                <th>Statut</th>
+      <div class="table-wrap" *ngIf="!selectedRegion">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Direction de rattachement</th>
+              <th>Structure / Unité</th>
+              <th>Type</th>
+              <th>Autorisés Juillet</th>
+              <th>Recrutés Juillet</th>
+              <th>Autorisés Août</th>
+              <th>Recrutés Août</th>
+            
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let r of regions; let ri = index">
+              <tr *ngFor="let s of r.structures; let si = index"
+                  [class.alt-row]="si % 2 === 0"
+                  [class.hidden-row]="filterType !== 'ALL' && s.type !== filterType">
+                <td class="td-num">{{ getGlobalIndex(ri, si) }}</td>
+                <td class="td-region">
+                  <span *ngIf="si === 0" class="region-label">
+                    {{ r.name.replace('Gouvernorat de ','').replace("Gouvernorat de l'","") }}
+                  </span>
+                </td>
+                <td class="td-struct">{{ s.name }}</td>
+                <td>
+                  <span class="type-badge" [class.badge-ec]="s.type==='ESPACE_COMMERCIAL'" [class.badge-ct]="s.type==='CENTRE_TECHNIQUE'">
+                    {{ s.type === 'ESPACE_COMMERCIAL' ? 'EC' : 'CT' }}
+                  </span>
+                </td>
+
+                <td class="td-num">{{ s.autorisesJuillet }}</td>
+                <td class="td-num">{{ s.recrutesJuillet }}</td>
+                <td class="td-num">{{ s.autorisesAout }}</td>
+                <td class="td-num">{{ s.recrutesAout }}</td>
+
+               
+                <td>
+                  <span class="status-chip" [class.chip-done]="getRest(r.name,s.name)===0">
+                    {{ getRest(r.name, s.name) > 0 ? 'En cours' : 'Complet' }}
+                  </span>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              <ng-container *ngFor="let r of regions; let ri = index">
-                <tr *ngFor="let s of r.structures; let si = index"
-                    [class.alt-row]="si % 2 === 0"
-                    [class.hidden-row]="filterType !== 'ALL' && s.type !== filterType">
-                  <td class="td-num">{{ getGlobalIndex(ri, si) }}</td>
-                  <td class="td-region">
-                    <span *ngIf="si === 0" class="region-label">
-                      {{ r.name.replace('Gouvernorat de ','').replace("Gouvernorat de l'","") }}
-                    </span>
-                  </td>
-                  <td class="td-struct">{{ s.name }}</td>
-                  <td>
-                    <span class="type-badge" [class.badge-ec]="s.type==='ESPACE_COMMERCIAL'" [class.badge-ct]="s.type==='CENTRE_TECHNIQUE'">
-                      {{ s.type === 'ESPACE_COMMERCIAL' ? 'EC' : 'CT' }}
-                    </span>
-                  </td>
-                  
-                  <td class="td-num">{{ s.autorises }}</td>
-<td class="td-num">{{ s.recrutes }}</td>
-                  <td class="td-num" [class.positive]="getRest(r.name,s.name)>0" [class.zero]="getRest(r.name,s.name)===0">
-                    {{ getRest(r.name, s.name) }}
-                  </td>
-                  <td>
-                    <span class="status-chip" [class.chip-done]="getRest(r.name,s.name)===0">
-                      {{ getRest(r.name, s.name) > 0 ? 'En cours' : 'Complet' }}
-                    </span>
-                  </td>
-                </tr>
-              </ng-container>
-              <tr class="total-row">
-                <td colspan="5">TOTAL GÉNÉRAL</td>
-                <td>{{ getTotalAuth() }}</td>
-                <td>{{ getTotalRec() }}</td>
-                <td>{{ getTotalAuth() - getTotalRec() }}</td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+            </ng-container>
+            <tr class="total-row">
+              <td colspan="4">TOTAL GÉNÉRAL</td>
+              <td>{{ getTotalAuthJuillet() }}</td>
+              <td>{{ getTotalRecJuillet() }}</td>
+              <td>{{ getTotalAuthAout() }}</td>
+              <td>{{ getTotalRecAout() }}</td>
+             
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
         <!-- ── TABLEAU DÉTAIL RÉGION ── -->
         <div class="table-wrap" *ngIf="selectedRegion">

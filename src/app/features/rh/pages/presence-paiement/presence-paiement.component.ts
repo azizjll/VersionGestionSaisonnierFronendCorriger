@@ -226,12 +226,34 @@ onStructureChange(): void {
 }
 
 
+// ── Helper : calcule 'disponible' selon le mois sélectionné (ou global si aucun mois) ──
+private avecDispo(liste: StructureDTO[]): any[] {
+  return liste.map(s => {
+    let disponible: boolean;
+
+    if (this.selectedMois === 'JUILLET') {
+      disponible = s.recrutesJuillet < s.autorisesJuillet;
+    } else if (this.selectedMois === 'AOUT') {
+      disponible = s.recrutesAout < s.autorisesAout;
+    } else {
+      // "Tous les mois" (ou pas de filtre) → disponible si au moins un des 2 mois a de la place
+      disponible = (s.recrutesJuillet < s.autorisesJuillet) || (s.recrutesAout < s.autorisesAout);
+    }
+
+    return { ...s, disponible };
+  });
+}
+
 get structuresEC(): StructureDTO[] {
-    return this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL');
+  return this.avecDispo(this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL'));
 }
 
 get structuresCT(): StructureDTO[] {
-    return this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE');
+  return this.avecDispo(this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE'));
+}
+
+get structuresSC(): StructureDTO[] {
+  return this.avecDispo(this.structures.filter(s => s.type === 'STRUCTURE_CENTRALE'));
 }
 
   private buildLocalMap(): Record<number, Partial<SaisonnierPaie>> {

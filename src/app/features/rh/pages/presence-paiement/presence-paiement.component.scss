@@ -119,28 +119,40 @@ $shadow:  0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
 .param-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  min-width: 130px;
+  gap: 6px;
+  min-width: 180px; // ⬆️ était 130px
 
-  label { font-size:.72rem; font-weight:700; color:$text-md; }
+  label {
+    font-size: .82rem;   // ⬆️ était .72rem
+    font-weight: 700;
+    color: $text-md;
+  }
+
   input, select {
-    padding: 8px 12px;
+    padding: 11px 14px;  // ⬆️ était 8px 12px
     border: 1.5px solid $border;
-    border-radius: 9px;
+    border-radius: 10px; // ⬆️ légèrement plus arrondi
     font-family: $font;
-    font-size: .83rem;
+    font-size: .95rem;   // ⬆️ était .83rem
     color: $text-dk;
     outline: none;
     transition: border-color .2s;
     background: $bg;
-    &:focus { border-color:$blue; background:$white; }
+    &:focus { border-color: $blue; background: $white; }
   }
-  input[type=number] { width:100px; }
-  input[type=date]   { width:150px; }
-  select             { width:160px; appearance:none;
+
+  input[type=number] { width: 120px; }  // ⬆️ était 100px
+  input[type=date]   { width: 170px; }  // ⬆️ était 150px
+
+  select {
+    width: 320px;        // ⬆️ était 160px — pour laisser la place aux libellés longs (J:0/1 · A:0/2)
+    appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position:right 8px center; background-size:14px;
-    padding-right:28px; cursor:pointer;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 34px;
+    cursor: pointer;
   }
 }
 

@@ -3,6 +3,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { EtatRHService } from 'src/app/service/etat-rh.service';
+import { AffectationService } from 'src/app/services/affectation.service';
 import { AuthService, Region } from 'src/app/services/auth.service';
 import { CampagneService, CampagneRequestDTO } from 'src/app/services/campagne.service';
 import { CandidatureService } from 'src/app/services/candidature.service';
@@ -102,6 +103,10 @@ interface Structure {
   adresse: string;
   autorises: number;
   recrutes: number;
+  autorisesJuillet: number;
+  recrutesJuillet: number;
+  autorisesAout: number;
+  recrutesAout: number;
   isFirstInGov?: boolean;
 }
 
@@ -129,6 +134,11 @@ interface StructuresStats {
   centresTechnologiques: number;
   saisonnersAutorises: number;
   saisonnersRecrutes: number;
+
+   saisonnersAutorisesJuillet: number;
+  saisonnersRecrutesJuillet: number;
+  saisonnersAutorisesAout: number;
+  saisonnersRecrutesAout: number;
 }
 
 // ─── Nouvelles interfaces Présence & Paiement ─────────────────────
@@ -143,6 +153,8 @@ export interface PresenceRow {
   rib: string;
   statut: 'paye' | 'impaye';
   campagneId?: number;
+    moisTravail?: string; // 🆕 'JUILLET' | 'AOUT' | 'JUILLET_AOUT'
+
 }
 
 interface PresenceConfig {
@@ -191,6 +203,7 @@ export class HomeAdminComponent implements OnInit {
   showEditStructureModal = false;
   showAbsenceModal = false;
 
+  presenceFilterMois = ''; // 🆕 '' | 'JUILLET' | 'AOUT' | 'JUILLET_AOUT'
   // ── Global Stats ─────────────────────────────────────────────────
   stats = {
     campagnesCloturee: 0,
@@ -353,17 +366,43 @@ export class HomeAdminComponent implements OnInit {
     this.selectedCandidature = null;
   }
 
-  get structuresEC(): StructureDTO[] {
-    return this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL');
-  }
+  private avecDispo(liste: StructureDTO[]): any[] {
+  const mois = this.selectedCandidature?.saisonnier?.moisTravail;
+  const structureActuelleId = this.selectedCandidatureStructure?.id;
 
-  get structuresCT(): StructureDTO[] {
-    return this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE');
-  }
+  return liste.map(s => {
+    let disponible: boolean;
 
-  get structuresSC(): StructureDTO[] {
-    return this.structures.filter(s => s.type === 'STRUCTURE_CENTRALE');
-  }
+    if (mois === 'JUILLET') {
+      disponible = s.recrutesJuillet < s.autorisesJuillet;
+    } else if (mois === 'AOUT') {
+      disponible = s.recrutesAout < s.autorisesAout;
+    } else if (mois === 'JUILLET_AOUT') {
+      disponible = (s.recrutesJuillet < s.autorisesJuillet) && (s.recrutesAout < s.autorisesAout);
+    } else {
+      disponible = (s.recrutesJuillet < s.autorisesJuillet) || (s.recrutesAout < s.autorisesAout);
+    }
+
+    // ✅ la structure déjà affectée reste sélectionnable même si complète
+    if (Number(s.id) === Number(structureActuelleId)) {
+      disponible = true;
+    }
+
+    return { ...s, disponible };
+  });
+}
+
+get structuresEC(): StructureDTO[] {
+  return this.avecDispo(this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL'));
+}
+
+get structuresCT(): StructureDTO[] {
+  return this.avecDispo(this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE'));
+}
+
+get structuresSC(): StructureDTO[] {
+  return this.avecDispo(this.structures.filter(s => s.type === 'STRUCTURE_CENTRALE'));
+}
 
   onStructureChange(): void {
     const found = this.structures.find(s => s.id === this.selectedStructureId);
@@ -395,7 +434,11 @@ export class HomeAdminComponent implements OnInit {
     espacesCommerciaux: 54,
     centresTechnologiques: 33,
     saisonnersAutorises: 0,
-    saisonnersRecrutes: 0
+    saisonnersRecrutes: 0,
+    saisonnersAutorisesJuillet: 0,
+  saisonnersRecrutesJuillet: 0,
+  saisonnersAutorisesAout: 0,
+  saisonnersRecrutesAout: 0
   };
 
   etatsRH: any[] = [];
@@ -482,7 +525,9 @@ export class HomeAdminComponent implements OnInit {
     private readonly docCampagneService: DocumentCampagneService,    // S2933
     private readonly parentService: ParentAutoriseService,    // S2933
     private readonly etatRHService: EtatRHService,            // S2933
-    private readonly presencePdfService: PresencePdfExportService    // S2933
+    private readonly presencePdfService: PresencePdfExportService,    // S2933
+      private readonly affectationService: AffectationService, // ← à ajouter
+
   ) {}
 
   nomUtilisateur = '';
@@ -589,6 +634,8 @@ export class HomeAdminComponent implements OnInit {
         this.voirParentsCampagne(campagneActive); // updateStats() appelé dedans
       } else {
         this.parents = [];
+        this.structures = []; // ← vider si pas de campagne active
+
         this.updateStats();
       }
 
@@ -596,6 +643,15 @@ export class HomeAdminComponent implements OnInit {
       error: err => console.error('Erreur chargement campagnes', err)
     });
   }
+
+  oadStructuresCampagneActive(): void {
+  this.structureService.getStructuresCampagneActive().subscribe({
+    next: (data) => {
+      this.structures = data;
+    },
+    error: err => console.error('Erreur chargement structures campagne active', err)
+  });
+}
 
   loadEtatsRH(): void {
     this.etatRHService.getAllEtats().subscribe({
@@ -782,7 +838,7 @@ export class HomeAdminComponent implements OnInit {
         subtitle: 'مذكرة حول انتداب أعوان متعاقدين لعمل موسمي'
       },
       structures: {
-        title: 'Structures par Région',
+        title: 'Structures par Direction',
         subtitle: ''
       },
       presence: {
@@ -1303,6 +1359,15 @@ if (campagneMemeAnnee) {
     this.filterCandidatures();
   }
 
+  get presenceMoisDisponibles(): string[] {
+  const set = new Set(
+    this.presenceRows
+      .map(r => r.moisTravail)
+      .filter((m): m is string => !!m)
+  );
+  return Array.from(set);
+}
+
   get presenceRegionsDisponibles(): string[] {
     const set = new Set(
       this.presenceRows
@@ -1333,12 +1398,12 @@ if (campagneMemeAnnee) {
   }
 
   resetFiltresPresence(): void {
-    this.presenceFilterRegion = '';
-    this.presenceFilterStructure = '';
-    this.presenceSearchQuery = '';
-    this.filterPresence();
-  }
-
+  this.presenceFilterRegion = '';
+  this.presenceFilterStructure = '';
+  this.presenceFilterMois = ''; // 🆕
+  this.presenceSearchQuery = '';
+  this.filterPresence();
+}
   errors: { [key: string]: string } = {};
 
   // S3776: split validation into smaller helpers to reduce cognitive complexity
@@ -1401,76 +1466,114 @@ if (campagneMemeAnnee) {
     return Object.keys(this.errors).length === 0;
   }
 
-  updateCandidature() {
-    if (!this.validateForm()) return;
+  updateCandidature(): void {
+  if (!this.validateForm()) return;
 
-    const cand = this.selectedCandidature;
-    const s = cand.saisonnier;
-    const formData = new FormData();
+  const cand = this.selectedCandidature;
+  const s = cand.saisonnier;
+  const formData = new FormData();
 
-    formData.append('nom', s.nom);
-    formData.append('prenom', s.prenom);
-    formData.append('cin', s.cin);
-    formData.append('rib', s.rib);
-    formData.append('telephone', s.telephone);
-    formData.append('email', s.email);
-    formData.append('regionId', s.region.id);
-    formData.append('moisTravail', s.moisTravail || '');
-    formData.append('statut', cand.statut);
-    formData.append('commentaire', cand.commentaire || '');
-    formData.append('niveauEtude', s.niveauEtude || '');
-    formData.append('diplome', s.diplome || '');
-    formData.append('specialiteDiplome', s.specialiteDiplome || '');
-    formData.append('nomPrenomParent', s.nomPrenomParent || '');
-    formData.append('matriculeParent', String(s.matriculeParent ?? ''));
+  formData.append('nom', s.nom);
+  formData.append('prenom', s.prenom);
+  formData.append('cin', s.cin);
+  formData.append('rib', s.rib);
+  formData.append('telephone', s.telephone);
+  formData.append('email', s.email);
+  formData.append('regionId', s.region.id);
+  formData.append('moisTravail', s.moisTravail || '');
+  formData.append('statut', cand.statut);
+  formData.append('commentaire', cand.commentaire || '');
+  formData.append('niveauEtude', s.niveauEtude || '');
+  formData.append('diplome', s.diplome || '');
+  formData.append('specialiteDiplome', s.specialiteDiplome || '');
+  formData.append('nomPrenomParent', s.nomPrenomParent || '');
+  formData.append('matriculeParent', String(s.matriculeParent ?? ''));
 
-    this.candidatureService.updateCandidature(cand.id, formData)
-      .subscribe({
-        next: () => {
-          alert('Candidature mise à jour ✅');
-          this.loadCandidatures();
-          this.closeDossier();
-        },
-        error: err => console.error(err)
-      });
+  // 🆕 structure sélectionnée
+  if (this.selectedStructureId) {
+    formData.append('structureId', this.selectedStructureId.toString());
   }
+
+  this.candidatureService.updateCandidature(cand.id, formData).subscribe({
+    next: () => {
+      // ── Si la structure a changé par rapport à l'affectation actuelle ──
+      const structureAChangee =
+        this.selectedStructureId &&
+        this.selectedStructureId !== this.selectedCandidatureStructure?.id;
+
+      if (structureAChangee) {
+        const campagneId = cand.campagne?.id ?? this.campagneActive?.id;
+
+        this.affectationService.affecterCandidature(
+          cand.id,
+          this.selectedStructureId!,
+          campagneId
+        ).subscribe({
+          next: () => {
+            alert('✅ Candidature et structure mises à jour');
+            this.loadCandidatures();
+            this.closeDossier();
+          },
+          error: (err) => {
+            console.error(err);
+            alert('⚠️ Candidature sauvegardée mais erreur lors de l\'affectation à la structure');
+            this.loadCandidatures();
+            this.closeDossier();
+          }
+        });
+      } else {
+        alert('✅ Candidature mise à jour');
+        this.loadCandidatures();
+        this.closeDossier();
+      }
+    },
+    error: err => {
+      console.error(err);
+      alert('❌ Erreur lors de la modification');
+    }
+  });
+}
 
   onlyDigits(event: KeyboardEvent): boolean {
     return /\d/.test(event.key);
   }
 
   openDossier(cand: any) {
-    this.selectedCandidature = structuredClone(cand); // S7784: prefer structuredClone
-    console.log('📂 Candidature ouverte:', this.selectedCandidature);
+  this.selectedCandidature = structuredClone(cand);
+  console.log('📂 Candidature ouverte:', this.selectedCandidature);
 
-    this.selectedStructureId = cand.saisonnier?.structure?.id || null;
-    console.log('🏢 Structure sélectionnée (init):', this.selectedStructureId);
+  this.selectedStructureId = cand.saisonnier?.structure?.id || null;
+  this.showDossierModal = true;
+  this.isLoadingStructure = true;
 
-    this.showDossierModal = true;
-    const regionId = cand.saisonnier?.region?.id || this.myRegion?.id;
-    this.structureService.getStructuresByRegion(regionId).subscribe({
-      next: (data: StructureDTO[]) => {
-        this.structures = data;
-        this.candidatureService.getStructureByCandidature(cand.id).subscribe({
-          next: (st: any) => {
-            if (st?.id) {
-              this.selectedCandidatureStructure = st;
-              this.selectedStructureId = st.id;
-            }
-            this.isLoadingStructure = false;
-          },
-          error: () => {
-            this.selectedStructureId = null;
-            this.isLoadingStructure = false;
+  const regionNom = cand.saisonnier?.region?.nom;
+
+  // ✅ getStructuresCampagneActive() ne retourne QUE les structures
+  //    de la campagne active — plus de doublons entre campagnes
+  this.structureService.getStructuresCampagneActive().subscribe({
+    next: (data: StructureDTO[]) => {
+      this.structures = data.filter(s => s.region === regionNom);
+
+      this.candidatureService.getStructureByCandidature(cand.id).subscribe({
+        next: (st: any) => {
+          if (st?.id) {
+            this.selectedCandidatureStructure = st;
+            this.selectedStructureId = st.id;
           }
-        });
-      },
-      error: (err: any) => {
-        console.error('Erreur chargement structures:', err);
-        this.isLoadingStructure = false;
-      }
-    });
-  }
+          this.isLoadingStructure = false;
+        },
+        error: () => {
+          this.selectedStructureId = null;
+          this.isLoadingStructure = false;
+        }
+      });
+    },
+    error: (err: any) => {
+      console.error('Erreur chargement structures:', err);
+      this.isLoadingStructure = false;
+    }
+  });
+}
 
   // ── Gestion des documents pendants (lors création campagne) ──────
 
@@ -1499,30 +1602,35 @@ if (campagneMemeAnnee) {
 
   // ─── Candidatures ─────────────────────────────────────────────────
 
-  loadCandidatures(): void {
-    this.candidatureService.getAllCandidatures().subscribe({
-      next: data => {
-        this.candidatures = data;
-        this.candidatures.forEach(c => {
-          this.candidatureService.getStructureByCandidature(c.id).subscribe({
-            next: (st: any) => {
-              if (st?.id) {
-                this.candidatureStructureMap.set(c.id, st);
-              }
-            },
-            error: () => {}
-          });
+ loadCandidatures(): void {
+  this.candidatureService.getAllCandidatures().subscribe({
+    next: data => {
+      const campagneActive = this.campagnes.find(c => c.statut === 'active');
+
+      // ✅ On ne garde que les candidatures de la campagne active
+      this.candidatures = campagneActive
+        ? data.filter((c: Candidature) => c.campagne?.id === campagneActive.id)
+        : [];
+
+      this.candidatures.forEach(c => {
+        this.candidatureService.getStructureByCandidature(c.id).subscribe({
+          next: (st: any) => {
+            if (st?.id) {
+              this.candidatureStructureMap.set(c.id, st);
+            }
+          },
+          error: () => {}
         });
+      });
 
-        this.updateCandidaturesParCampagne();
-        this.filterCandidatures();
-        this.loadPresenceRows();
-        this.updateStats();
-      },
-      error: err => console.error('Erreur chargement candidatures', err)
-    });
-  }
-
+      this.updateCandidaturesParCampagne();
+      this.filterCandidatures();
+      this.loadPresenceRows();
+      this.updateStats();
+    },
+    error: err => console.error('Erreur chargement candidatures', err)
+  });
+}
   updateStats(): void {
     const candidatures = this.candidatures || [];
 
@@ -1837,70 +1945,74 @@ if (campagneMemeAnnee) {
   }
 
   saveEditStructure(): void {
-    if (!this.editingStructure) return;
+  if (!this.editingStructure) return;
 
-    this.structureService.updateStructure(this.editingStructure.id, {
-      nom: this.editingStructure.nom,
-      adresse: this.editingStructure.adresse,
-      autorises: this.editingStructure.autorises,
-      type: this.editingStructure.type
-    }).subscribe({
-      next: () => {
-        const idx = this.structures.findIndex(s => s.id === this.editingStructure!.id);
-        if (idx !== -1) {
-          this.structures[idx] = {
-            ...this.editingStructure!,
-            disponible: this.structures[idx].disponible
-          };
-          this.buildGouvernorats();
-          this.applyStructureFilter();
-          this.updateStructuresStats();
-        }
-        this.closeEditStructureModal();
-        alert('✅ Structure mise à jour avec succès');
-      },
-      error: (err) => {
-        console.error(err);
-        alert('❌ Erreur lors de la mise à jour');
+  this.structureService.updateStructure(this.editingStructure.id, {
+    nom: this.editingStructure.nom,
+    adresse: this.editingStructure.adresse,
+    type: this.editingStructure.type,
+    autorisesJuillet: this.editingStructure.autorisesJuillet,
+    recrutesJuillet: this.editingStructure.recrutesJuillet,
+    autorisesAout: this.editingStructure.autorisesAout,
+    recrutesAout: this.editingStructure.recrutesAout
+  }).subscribe({
+    next: () => {
+      const idx = this.structures.findIndex(s => s.id === this.editingStructure!.id);
+      if (idx !== -1) {
+        this.structures[idx] = { ...this.structures[idx], ...this.editingStructure! };
+        this.buildGouvernorats();
+        this.applyStructureFilter();
+        this.updateStructuresStats();
       }
-    });
-  }
+      this.closeEditStructureModal();
+      alert('✅ Structure mise à jour avec succès');
+    },
+    error: (err) => {
+      console.error(err);
+      alert('❌ Erreur lors de la mise à jour');
+    }
+  });
+}
 
   private updateStructuresStats(): void {
-    this.structuresStats.total = this.structures.length;
-    this.structuresStats.espacesCommerciaux = this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL').length;
-    this.structuresStats.centresTechnologiques = this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE').length;
-    this.structuresStats.saisonnersAutorises = this.structures.reduce((sum, s) => sum + s.autorises, 0);
-    this.structuresStats.saisonnersRecrutes = this.structures.reduce((sum, s) => sum + s.recrutes, 0);
-  }
+  this.structuresStats.total = this.structures.length;
+  this.structuresStats.espacesCommerciaux = this.structures.filter(s => s.type === 'ESPACE_COMMERCIAL').length;
+  this.structuresStats.centresTechnologiques = this.structures.filter(s => s.type === 'CENTRE_TECHNIQUE').length;
+
+  this.structuresStats.saisonnersAutorisesJuillet = this.structures.reduce((sum, s) => sum + s.autorisesJuillet, 0);
+  this.structuresStats.saisonnersRecrutesJuillet = this.structures.reduce((sum, s) => sum + s.recrutesJuillet, 0);
+  this.structuresStats.saisonnersAutorisesAout = this.structures.reduce((sum, s) => sum + s.autorisesAout, 0);
+  this.structuresStats.saisonnersRecrutesAout = this.structures.reduce((sum, s) => sum + s.recrutesAout, 0);
+}
 
   // ─── Présence & Paiement ──────────────────────────────────────────
 
   loadPresenceRows(): void {
-    const campagneId = this.presenceConfig.campagneId;
-    let candidaturesFiltrees = this.candidatures;
+  const campagneId = this.presenceConfig.campagneId;
+  let candidaturesFiltrees = this.candidatures;
 
-    if (campagneId) {
-      candidaturesFiltrees = this.candidatures.filter(c => c.campagne.id === campagneId);
-    }
-
-    candidaturesFiltrees = candidaturesFiltrees.filter(c => c.statut === 'ACCEPTEE');
-
-    this.presenceRows = candidaturesFiltrees.map(c => ({
-      id: c.id,
-      nom: `${c.saisonnier.nom} ${c.saisonnier.prenom}`,
-      cin: String(c.saisonnier.cin),
-      dureeContrat: this.presenceConfig.dureeContrat,
-      absences: c.saisonnier.absences ?? 0,
-      montantNet: 0,
-      rib: c.saisonnier.rib ?? '',
-      statut: 'impaye' as const, // S6590: use `as const` instead of literal type assertion
-      campagneId: c.campagne.id
-    }));
-
-    this.recalculerPresence();
-    this.filterPresence();
+  if (campagneId) {
+    candidaturesFiltrees = this.candidatures.filter(c => c.campagne.id === campagneId);
   }
+
+  candidaturesFiltrees = candidaturesFiltrees.filter(c => c.statut === 'ACCEPTEE');
+
+  this.presenceRows = candidaturesFiltrees.map(c => ({
+    id: c.id,
+    nom: `${c.saisonnier.nom} ${c.saisonnier.prenom}`,
+    cin: String(c.saisonnier.cin),
+    dureeContrat: this.presenceConfig.dureeContrat,
+    absences: c.saisonnier.absences ?? 0,
+    montantNet: 0,
+    rib: c.saisonnier.rib ?? '',
+    statut: 'impaye' as const,
+    campagneId: c.campagne.id,
+    moisTravail: c.saisonnier.moisTravail // 🆕
+  }));
+
+  this.recalculerPresence();
+  this.filterPresence();
+}
 
   getCampagneBudget(): number {
     const campagneActive = this.campagnes.find(c => c.statut === 'active');
@@ -1941,38 +2053,43 @@ if (campagneMemeAnnee) {
   }
 
   filterPresence(): void {
-    let list = [...this.presenceRows];
+  let list = [...this.presenceRows];
 
-    if (this.presenceFilterRegion) {
-      list = list.filter(r => {
-        const cand = this.candidatures.find(c => c.id === r.id);
-        return cand?.saisonnier?.region?.nom === this.presenceFilterRegion;
-      });
-    }
-
-    if (this.presenceFilterStructure) {
-      list = list.filter(r => {
-        const st = this.candidatureStructureMap.get(r.id);
-        return st?.nom?.trim().toLowerCase() ===
-          this.presenceFilterStructure.trim().toLowerCase();
-      });
-    }
-
-    if (this.presenceFilter === 'payes') {
-      list = list.filter(r => r.statut === 'paye');
-    } else if (this.presenceFilter === 'impayes') {
-      list = list.filter(r => r.statut === 'impaye');
-    }
-
-    if (this.presenceSearchQuery.trim()) {
-      const q = this.presenceSearchQuery.toLowerCase();
-      list = list.filter(r =>
-        r.nom.toLowerCase().includes(q) || r.cin.toLowerCase().includes(q)
-      );
-    }
-
-    this.filteredPresenceRows = list;
+  if (this.presenceFilterRegion) {
+    list = list.filter(r => {
+      const cand = this.candidatures.find(c => c.id === r.id);
+      return cand?.saisonnier?.region?.nom === this.presenceFilterRegion;
+    });
   }
+
+  if (this.presenceFilterStructure) {
+    list = list.filter(r => {
+      const st = this.candidatureStructureMap.get(r.id);
+      return st?.nom?.trim().toLowerCase() ===
+        this.presenceFilterStructure.trim().toLowerCase();
+    });
+  }
+
+  // 🆕 Filtre par mois
+  if (this.presenceFilterMois) {
+    list = list.filter(r => r.moisTravail === this.presenceFilterMois);
+  }
+
+  if (this.presenceFilter === 'payes') {
+    list = list.filter(r => r.statut === 'paye');
+  } else if (this.presenceFilter === 'impayes') {
+    list = list.filter(r => r.statut === 'impaye');
+  }
+
+  if (this.presenceSearchQuery.trim()) {
+    const q = this.presenceSearchQuery.toLowerCase();
+    list = list.filter(r =>
+      r.nom.toLowerCase().includes(q) || r.cin.toLowerCase().includes(q)
+    );
+  }
+
+  this.filteredPresenceRows = list;
+}
 
   setPresenceFilter(filter: 'tous' | 'payes' | 'impayes'): void {
     this.presenceFilter = filter;

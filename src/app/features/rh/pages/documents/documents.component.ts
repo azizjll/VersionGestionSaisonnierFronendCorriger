@@ -18,6 +18,10 @@ export interface Structure {
   adresse: string;
   autorises: number;   
   recrutes: number;
+   autorisesJuillet: number;
+  recrutesJuillet: number;
+  autorisesAout: number;
+  recrutesAout: number;
 }
 
 export interface Region {
@@ -125,7 +129,6 @@ uploadEtat(file: File): void {
  loadRegions(): void {
   this.structureService.getStructuresCampagneActive().subscribe({
     next: (data) => {
-      // Grouper les structures par région (comme HomeAdminComponent)
       const regionMap = new Map<string, Structure[]>();
 
       data.forEach(s => {
@@ -136,8 +139,12 @@ uploadEtat(file: File): void {
           name: s.nom,
           type: s.type,
           adresse: s.adresse,
-          autorises:s.autorises??0,
-          recrutes:s.recrutes??0
+          autorises: s.autorises ?? 0,
+          recrutes: s.recrutes ?? 0,
+          autorisesJuillet: s.autorisesJuillet ?? 0,
+          recrutesJuillet: s.recrutesJuillet ?? 0,
+          autorisesAout: s.autorisesAout ?? 0,
+          recrutesAout: s.recrutesAout ?? 0
         });
       });
 
@@ -150,6 +157,26 @@ uploadEtat(file: File): void {
     },
     error: err => console.error('Erreur chargement structures', err)
   });
+}
+
+getTotalAuthJuillet(): number {
+  return this.regions.reduce((s, r) =>
+    s + r.structures.reduce((acc, st) => acc + st.autorisesJuillet, 0), 0);
+}
+
+getTotalRecJuillet(): number {
+  return this.regions.reduce((s, r) =>
+    s + r.structures.reduce((acc, st) => acc + st.recrutesJuillet, 0), 0);
+}
+
+getTotalAuthAout(): number {
+  return this.regions.reduce((s, r) =>
+    s + r.structures.reduce((acc, st) => acc + st.autorisesAout, 0), 0);
+}
+
+getTotalRecAout(): number {
+  return this.regions.reduce((s, r) =>
+    s + r.structures.reduce((acc, st) => acc + st.recrutesAout, 0), 0);
 }
 
 
@@ -349,11 +376,15 @@ private handlePdfUpload(file: File): void {
     return this.filterType === 'ALL' ? all : all.filter(s => s.type === this.filterType);
   }
 
-  getRest(region: string, structName: string): number {
+ getRest(region: string, structName: string): number {
   const s = this.regions.find(r => r.name === region)
                          ?.structures.find(st => st.name === structName);
   if (!s) return 0;
-  return Math.max(0, s.autorises - s.recrutes);
+
+  const totalAutorises = (s.autorisesJuillet ?? 0) + (s.autorisesAout ?? 0);
+  const totalRecrutes  = (s.recrutesJuillet ?? 0) + (s.recrutesAout ?? 0);
+
+  return Math.max(0, totalAutorises - totalRecrutes);
 }
 
 getRegionTotal(region: string, type: 'auth' | 'rec'): number {
