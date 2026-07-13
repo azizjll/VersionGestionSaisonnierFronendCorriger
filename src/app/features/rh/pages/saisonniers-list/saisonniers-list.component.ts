@@ -79,6 +79,8 @@ activeMoisFilter: string = 'ALL';
   selectedFiles: File[] = [];
 docsToDelete: number[] = [];
 
+motifRefus = '';
+
   regions: Region[] = []; // toutes les régions
   myRegion!: Region;      // région du RH connecté
 
@@ -273,13 +275,17 @@ setStructureFilter(nom: string): void {
 
 compareStructureIds = (a: number | null, b: number | null): boolean => {
   return Number(a) === Number(b);
-};
+}
+
+
   openDossier(cand: any): void {
   this.selectedCandidature = { ...cand, saisonnier: { ...cand.saisonnier } };
   this.selectedCandidatureStructure = null;
   this.selectedStructureId = null;
   this.selectedFiles = [];
   this.docsToDelete = [];
+  this.motifRefus = cand?.motifRefus ?? ''; // 🆕 si déjà refusé précédemment, réafficher le motif existant
+
   this.showDossierModal = true;
   this.isLoadingStructure = true;
 
@@ -554,7 +560,7 @@ annulerSuppressionDoc(docId: number): void {
 isDocMarkedForDeletion(docId: number): boolean {
   return this.docsToDelete.includes(docId);
 }
-  updateCandidature(): void {
+ updateCandidature(): void {
   const formData = new FormData();
   formData.append('nom',        this.selectedCandidature.saisonnier.nom);
   formData.append('prenom',     this.selectedCandidature.saisonnier.prenom);
@@ -564,19 +570,21 @@ isDocMarkedForDeletion(docId: number): boolean {
   formData.append('email',      this.selectedCandidature.saisonnier.email);
   formData.append('regionId',   this.selectedCandidature.saisonnier.region.id);
   formData.append('statut',     this.selectedCandidature.statut);
+
+  // ✅ un seul champ, cohérent avec le HTML : selectedCandidature.commentaire
   formData.append('commentaire', this.selectedCandidature.commentaire || '');
+
   formData.append('moisTravail', this.selectedCandidature.saisonnier.moisTravail || '');
 
-   // 🆕 nouveaux champs
   formData.append('nomPrenomParent',   this.selectedCandidature.saisonnier.nomPrenomParent  || '');
   formData.append('matriculeParent',   this.selectedCandidature.saisonnier.matriculeParent  || '');
   formData.append('niveauEtude',       this.selectedCandidature.saisonnier.niveauEtude      || '');
   formData.append('diplome',           this.selectedCandidature.saisonnier.diplome          || '');
   formData.append('specialiteDiplome', this.selectedCandidature.saisonnier.specialiteDiplome || '');
 
-if (this.selectedStructureId) {
-  formData.append('structureId', this.selectedStructureId.toString());
-}
+  if (this.selectedStructureId) {
+    formData.append('structureId', this.selectedStructureId.toString());
+  }
 
   Swal.fire({
     title: 'Mise à jour...',
@@ -584,12 +592,10 @@ if (this.selectedStructureId) {
     didOpen: () => Swal.showLoading()
   });
 
-  // 🆕 Nouveaux documents à uploader
   this.selectedFiles.forEach(file => {
     formData.append('documents', file, file.name);
   });
 
-  // 🆕 Documents existants à supprimer
   this.docsToDelete.forEach(id => {
     formData.append('documentsToDelete', id.toString());
   });
@@ -597,8 +603,6 @@ if (this.selectedStructureId) {
   this.candidatureService.updateCandidature(this.selectedCandidature.id, formData)
     .subscribe({
       next: () => {
-
-        // ── Si la structure a changé, faire la réaffectation ──
         if (this.selectedStructureId &&
             this.selectedStructureId !== this.selectedCandidatureStructure?.id) {
 
@@ -632,7 +636,6 @@ if (this.selectedStructureId) {
           });
 
         } else {
-          // Pas de changement de structure
           Swal.fire({
             icon: 'success',
             title: 'Modification réussie',
@@ -654,6 +657,23 @@ if (this.selectedStructureId) {
     });
 }
 
+
+onSaveClick(): void {
+  this.formSubmitted = true;
+
+  if (this.selectedCandidature.statut === 'REJETEE' && !this.selectedCandidature.commentaire?.trim()) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Motif requis',
+      text: 'Veuillez indiquer le motif de refus avant d\'enregistrer.',
+      timer: 2500,
+      showConfirmButton: false
+    });
+    return;
+  }
+
+  this.updateCandidature();
+}
 
 envoyerDemandeAutorisation(): void {
   // Commentaire obligatoire

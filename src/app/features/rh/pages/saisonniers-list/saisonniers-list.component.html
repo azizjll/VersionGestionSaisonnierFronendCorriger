@@ -393,6 +393,19 @@
         <option value="REJETEE">Refusée</option>
       </select>
     </div>
+
+    <!-- 🆕 Motif de refus obligatoire -->
+    <div class="field-group" *ngIf="selectedCandidature.statut === 'REJETEE'">
+      <label for="cand-motif-refus">Motif de refus <span style="color:red">*</span></label>
+      <textarea id="cand-motif-refus"
+                [(ngModel)]="selectedCandidature.commentaire"
+                rows="4"
+                placeholder="Expliquez le motif du refus de cette candidature..."></textarea>
+      <small class="error-msg" *ngIf="formSubmitted && !selectedCandidature.commentaire">
+        ⚠️ Le motif de refus est obligatoire.
+      </small>
+    </div>
+
     <div class="field-group">
       <label for="cand-mois">Mois de travail</label>
       <select id="cand-mois" [(ngModel)]="selectedCandidature.saisonnier.moisTravail">
@@ -520,15 +533,15 @@
 
     <!-- Cas normal -->
     <button class="btn-save-modal"
-            *ngIf="selectedCandidature.saisonnier.moisTravail !== 'JUILLET_AOUT'"
-            (click)="updateCandidature()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-        <polyline points="17 21 17 13 7 13 7 21"/>
-        <polyline points="7 3 7 8 15 8"/>
-      </svg>
-      Enregistrer
-    </button>
+        *ngIf="selectedCandidature.saisonnier.moisTravail !== 'JUILLET_AOUT'"
+        (click)="onSaveClick()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+    <polyline points="17 21 17 13 7 13 7 21"/>
+    <polyline points="7 3 7 8 15 8"/>
+  </svg>
+  Enregistrer
+</button>
 
     <!-- Cas Juillet + Août -->
     <button class="btn-send-modal"
