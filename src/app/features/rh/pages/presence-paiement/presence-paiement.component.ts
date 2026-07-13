@@ -25,6 +25,8 @@ export interface SaisonnierPaie {
   nomTitulaireCompte: string;
   cinTitulaire: string;
   paye: boolean;
+  regionNom: string;  // 🆕 Direction / Région
+
 }
 @Component({
   selector: 'app-presence-paiement',
@@ -166,9 +168,9 @@ onStructureChange(): void {
   ).subscribe({
     next: (dtos) => {
       const localMap = this.buildLocalMap();
-      const acceptes = dtos.filter((dto: any) => dto.statut === 'ACCEPTEE'); // ✅ filtrer
+      const acceptes = dtos.filter((dto: any) => dto.statut === 'ACCEPTEE');
 
-      this.saisonniers = acceptes.map(dto => {  // 🔴 acceptes et non dtos
+      this.saisonniers = acceptes.map(dto => {
         const saved = localMap[dto.id] ?? {};
         return {
           id:                 dto.id,
@@ -176,6 +178,7 @@ onStructureChange(): void {
           prenom:             dto.prenom,
           cin:                dto.cin,
           rib:                saved.rib ?? dto.rib ?? '',
+          regionNom: (dto as any).region?.nom ?? (dto as any).regionNom ?? '—', // 🆕
           dateMbacharah:      saved.dateMbacharah ?? this.dateMbacharah,
           duree:              saved.duree ?? this.dureeContrat,
           absences:           saved.absences ?? 0,
@@ -201,7 +204,6 @@ onStructureChange(): void {
     next: (dtos: SaisonnierDTO[]) => {
       const localMap = this.buildLocalMap();
 
-      // ✅ plus besoin de filtrer, le backend retourne déjà uniquement les ACCEPTEE
       this.saisonniers = dtos.map(dto => {
         const saved = localMap[dto.id] ?? {};
         return {
@@ -210,9 +212,10 @@ onStructureChange(): void {
           prenom:             dto.prenom,
           cin:                dto.cin as any,
           rib:                saved.rib ?? dto.rib ?? '',
+          regionNom:          (dto as any).region?.nom ?? (dto as any).regionNom ?? '—', // 🆕
           dateMbacharah:      saved.dateMbacharah ?? this.dateMbacharah,
           duree:              saved.duree ?? this.dureeContrat,
-	  absences:           dto.absences ?? saved.absences ?? 0,
+          absences:           dto.absences ?? saved.absences ?? 0,
           montantNet:         0,
           nomTitulaireCompte: saved.nomTitulaireCompte ?? '',
           cinTitulaire:       saved.cinTitulaire ?? '',
@@ -392,9 +395,7 @@ exportExcel(): void {
   const GREY_BG    = 'F1F5F9';
   const WHITE      = 'FFFFFF';
 
- 
   const fontTitle  = { name: 'Arial', sz: 14, bold: true, color: { rgb: WHITE } };
-  const fontSub    = { name: 'Arial', sz: 10, italic: true, color: { rgb: WHITE } };
   const fontHeader = { name: 'Arial', sz: 10, bold: true, color: { rgb: WHITE } };
   const fontTotal  = { name: 'Arial', sz: 10, bold: true, color: { rgb: WHITE } };
 
@@ -410,8 +411,6 @@ exportExcel(): void {
     fill: { fgColor: { rgb: BLUE_DARK } },
     alignment: { horizontal: 'center', vertical: 'center' },
   };
-
- 
 
   const cellHeader: any = {
     font: fontHeader,
@@ -436,8 +435,8 @@ exportExcel(): void {
 
   // ── Construction de la feuille cellule par cellule ────────────────────
   const ws: any = {};
-  const COLS = 6;         // A→G
-  const dataStartRow = 5; // ligne Excel où commence les données (1-indexed)
+  const COLS = 7;         // 🆕 A→G (+1 colonne Direction)
+  const dataStartRow = 5;
 
   // Ligne 1 : titre principal
   ws['A1'] = { v: 'Campagne des saisonniers - Etat de Présence', s: cellTitle };
@@ -445,14 +444,10 @@ exportExcel(): void {
     ws[XLSX.utils.encode_cell({ r: 0, c })] = { v: '', s: cellTitle };
   }
 
-  // Ligne 2 : sous-titre paramètres
- 
-
-  // Ligne 3 : vide (espacement)
   ws['A3'] = { v: '', s: { fill: { fgColor: { rgb: WHITE } } } };
 
   // Ligne 4 : en-têtes colonnes
-const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail', "Nbre de jours d'absences", 'N° Compte'];
+  const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Direction', 'Nbre de jours de travail', "Nbre de jours d'absences", 'N° Compte']; // 🆕
   headers.forEach((h, c) => {
     ws[XLSX.utils.encode_cell({ r: 3, c })] = { v: h, s: cellHeader };
   });
@@ -460,7 +455,7 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
   // Lignes de données
   const saisonniers = this.filteredSaisonniers;
   saisonniers.forEach((s, i) => {
-    const r = dataStartRow - 1 + i;  // 0-indexed row
+    const r = dataStartRow - 1 + i;
     const isAlt = i % 2 === 0;
     const bgColor = isAlt ? GREY_BG : WHITE;
 
@@ -477,13 +472,13 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
     ws[XLSX.utils.encode_cell({ r, c: 0 })] = cellData(i + 1, true, true);
     ws[XLSX.utils.encode_cell({ r, c: 1 })] = cellData(`${s.prenom} ${s.nom}`);
     ws[XLSX.utils.encode_cell({ r, c: 2 })] = cellData(s.cin, true);
-    ws[XLSX.utils.encode_cell({ r, c: 3 })] = cellData(s.duree, true);
+    ws[XLSX.utils.encode_cell({ r, c: 3 })] = cellData(s.regionNom || '—', true); // 🆕
+    ws[XLSX.utils.encode_cell({ r, c: 4 })] = cellData(s.duree, true);
 
-    // Absences : colorée selon valeur
     const absColor = s.absences > 0
       ? { bg: RED_BG,   fg: RED_FG }
       : { bg: GREEN_BG, fg: GREEN_FG };
-    ws[XLSX.utils.encode_cell({ r, c: 4 })] = {
+    ws[XLSX.utils.encode_cell({ r, c: 5 })] = {
       v: s.absences,
       s: {
         font: { name: 'Arial', sz: 10, bold: true, color: { rgb: absColor.fg } },
@@ -493,28 +488,24 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
       },
     };
 
-    // Montant net : formaté
-   
-
-    // Statut payé
-    ws[XLSX.utils.encode_cell({ r, c: 5 })] = cellData(s.rib || '—', true);
+    ws[XLSX.utils.encode_cell({ r, c: 6 })] = cellData(s.rib || '—', true);
   });
 
   // Ligne Total
   const totalRow = dataStartRow - 1 + saisonniers.length;
-  ws[XLSX.utils.encode_cell({ r: totalRow, c: 0 })] = { v: 'TOTAL',                         s: cellTotalLabel };
-  ws[XLSX.utils.encode_cell({ r: totalRow, c: 1 })] = { v: `${saisonniers.length} saisonniers`,   s: cellTotalLabel };
-  ws[XLSX.utils.encode_cell({ r: totalRow, c: 2 })] = { v: '',                               s: cellTotalVal };
-  ws[XLSX.utils.encode_cell({ r: totalRow, c: 3 })] = { v: this.getTotalJours(),             s: cellTotalVal };
-  ws[XLSX.utils.encode_cell({ r: totalRow, c: 4 })] = { v: this.getTotalAbsences(),          s: cellTotalVal };
- 
-  ws[XLSX.utils.encode_cell({ r: totalRow, c: 6 })] = { v: '', s: cellTotalVal };
+  ws[XLSX.utils.encode_cell({ r: totalRow, c: 0 })] = { v: 'TOTAL',                              s: cellTotalLabel };
+  ws[XLSX.utils.encode_cell({ r: totalRow, c: 1 })] = { v: `${saisonniers.length} saisonniers`,  s: cellTotalLabel };
+  ws[XLSX.utils.encode_cell({ r: totalRow, c: 2 })] = { v: '',                                    s: cellTotalVal };
+  ws[XLSX.utils.encode_cell({ r: totalRow, c: 3 })] = { v: '',                                    s: cellTotalVal }; // 🆕
+  ws[XLSX.utils.encode_cell({ r: totalRow, c: 4 })] = { v: this.getTotalJours(),                  s: cellTotalVal };
+  ws[XLSX.utils.encode_cell({ r: totalRow, c: 5 })] = { v: this.getTotalAbsences(),                s: cellTotalVal };
+  ws[XLSX.utils.encode_cell({ r: totalRow, c: 6 })] = { v: '',                                    s: cellTotalVal };
 
   // ── Fusions (merge) ───────────────────────────────────────────────────
   ws['!merges'] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: COLS - 1 } },   // titre
-    { s: { r: 1, c: 0 }, e: { r: 1, c: COLS - 1 } },   // sous-titre
-    { s: { r: totalRow, c: 0 }, e: { r: totalRow, c: 1 } }, // "TOTAL" + nb agents
+    { s: { r: 0, c: 0 }, e: { r: 0, c: COLS - 1 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: COLS - 1 } },
+    { s: { r: totalRow, c: 0 }, e: { r: totalRow, c: 1 } },
   ];
 
   // ── Largeurs colonnes ─────────────────────────────────────────────────
@@ -522,20 +513,19 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
     { wch: 5  },   // N°
     { wch: 28 },   // Nom
     { wch: 14 },   // CIN
+    { wch: 18 },   // Direction 🆕
     { wch: 14 },   // Durée
     { wch: 14 },   // Absences
     { wch: 26 },   // N° Compte
   ];
 
-  // ── Hauteurs lignes ───────────────────────────────────────────────────
   ws['!rows'] = [
-    { hpt: 30 },  // titre
-    { hpt: 22 },  // sous-titre
-    { hpt: 8  },  // vide
-    { hpt: 36 },  // en-têtes
+    { hpt: 30 },
+    { hpt: 22 },
+    { hpt: 8  },
+    { hpt: 36 },
   ];
 
-  // ── Plage de la feuille ───────────────────────────────────────────────
   ws['!ref'] = XLSX.utils.encode_range({
     s: { r: 0, c: 0 },
     e: { r: totalRow, c: COLS - 1 },
@@ -553,12 +543,9 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
 
   const PAGE_W = doc.internal.pageSize.getWidth();
 
-  // ── Logo / En-tête ────────────────────────────────────────────────────
-  // Bande bleue foncée en haut
-  doc.setFillColor(30, 58, 95);          // #1E3A5F
+  doc.setFillColor(30, 58, 95);
   doc.rect(0, 0, PAGE_W, 22, 'F');
 
-  // Titre
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
   doc.setTextColor(255, 255, 255);
@@ -568,7 +555,6 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
   doc.setFont('helvetica', 'normal');
   doc.text('Présence & Paiement — Saisonniers', 14, 17);
 
-  // Infos campagne à droite
   doc.setFontSize(9);
   doc.text(`Campagne ${this.currentYear}`, PAGE_W - 14, 10, { align: 'right' });
   doc.text(
@@ -576,11 +562,10 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
     PAGE_W - 14, 17, { align: 'right' }
   );
 
-  // ── Bande info sous l'en-tête ─────────────────────────────────────────
-  doc.setFillColor(37, 99, 235);         // #2563EB
+  doc.setFillColor(37, 99, 235);
   doc.rect(0, 22, PAGE_W, 8, 'F');
   doc.setFontSize(8);
-  doc.setTextColor(219, 234, 254);       // bleu très clair
+  doc.setTextColor(219, 234, 254);
   doc.text(
     `Total saisonniers : ${this.filteredSaisonniers.length}  |  ` +
     `Total jours travaillés : ${this.getTotalJours()}  |  ` +
@@ -590,17 +575,17 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
   );
 
   // ── Tableau ───────────────────────────────────────────────────────────
-  const headers = [['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail', 'Nbre de jours d/absences', 'Montant net (DT)', 'N° Compte']];
+  const headers = [['N°', 'Nom et Prénom', 'N° CIN', 'Direction', 'Nbre de jours de travail', 'Nbre de jours d/absences', 'Montant net (DT)', 'N° Compte']]; // 🆕
 
   const bodyData = this.filteredSaisonniers.map((s, i) => [
     (i + 1).toString(),
     `${s.prenom} ${s.nom}`,
     s.cin.toString(),
+    s.regionNom || '—', // 🆕
     s.duree.toString(),
     s.absences.toString(),
     `${s.montantNet.toFixed(3)} DT`,
     s.rib || '—',
-   
   ]);
 
   autoTable(doc, {
@@ -620,7 +605,7 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
     },
 
     headStyles: {
-      fillColor: [37, 99, 235],          // #2563EB
+      fillColor: [37, 99, 235],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       halign: 'center',
@@ -629,39 +614,39 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
 
     columnStyles: {
       0: { halign: 'center', cellWidth: 10  },   // N°
-      1: { halign: 'left',   cellWidth: 50  },   // Nom
-      2: { halign: 'center', cellWidth: 25  },   // CIN
-      3: { halign: 'center', cellWidth: 20  },   // Durée
-      4: { halign: 'center', cellWidth: 22  },   // Absences
-      5: { halign: 'center', cellWidth: 32  },   // Montant
-      6: { halign: 'center', cellWidth: 50  },   // RIB
-     
+      1: { halign: 'left',   cellWidth: 42  },   // Nom
+      2: { halign: 'center', cellWidth: 22  },   // CIN
+      3: { halign: 'center', cellWidth: 26  },   // Direction 🆕
+      4: { halign: 'center', cellWidth: 20  },   // Durée
+      5: { halign: 'center', cellWidth: 22  },   // Absences
+      6: { halign: 'center', cellWidth: 28  },   // Montant
+      7: { halign: 'center', cellWidth: 42  },   // RIB
     },
 
     // Lignes alternées + coloration conditionnelle
     didParseCell: (data) => {
-  if (data.section !== 'body') return;
+      if (data.section !== 'body') return;
 
-  const rowIndex = data.row.index;
-  const colIndex = data.column.index;
-  const s = this.filteredSaisonniers[rowIndex];
+      const rowIndex = data.row.index;
+      const colIndex = data.column.index;
+      const s = this.filteredSaisonniers[rowIndex];
 
-  this.applyRowAlternating(data, rowIndex);
+      this.applyRowAlternating(data, rowIndex);
 
-  if (colIndex === 4) this.applyAbsenceStyle(data, s);
-  if (colIndex === 5) this.applyMontantStyle(data);
-  if (colIndex === 7) this.applyStatutStyle(data, s);
-},
+      if (colIndex === 5) this.applyAbsenceStyle(data, s); // 🆕 index décalé (5 au lieu de 4)
+      if (colIndex === 6) this.applyMontantStyle(data);     // 🆕 index décalé (6 au lieu de 5)
+    },
 
     // Ligne de total en bas du tableau
     foot: [[
       '',
       `${this.filteredSaisonniers.length} saisonniers`,
       '',
+      '', // 🆕 Direction (vide sur la ligne total)
       this.getTotalJours().toString(),
       this.getTotalAbsences().toString(),
       `${this.getTotalMontant().toFixed(3)} DT`,
-      '', ''
+      '',
     ]],
 
     footStyles: {
@@ -672,7 +657,6 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
       fontSize:   8.5,
     },
 
-    // Numérotation des pages
     didDrawPage: (data) => {
       const pageCount = (doc.internal as any).getNumberOfPages();
       const pageNum   = (doc as any).internal.getCurrentPageInfo().pageNumber;

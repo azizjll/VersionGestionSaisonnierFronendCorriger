@@ -132,118 +132,105 @@
     </div>
 
     <div class="table-wrap">
-      <table class="data-table" dir="ltr">
-        <thead>
-  <tr>
-    <th>N°</th>
-    <th>Nom et Prénom</th>
-    <th>N° CIN</th>
-    <th>N° Compte</th>
-    <th>Mois de travail</th> 
-    <th>Absences(Jours)</th>
-    <th>Durée de travail(Jours)</th>
-    <th>Montant net (DT)</th>
-    
-    <th>Actions</th>
-  </tr>
-</thead>
-        <tbody>
-          <tr *ngIf="filteredSaisonniers.length === 0">
-            <td colspan="12" class="empty-row">
-              <div class="empty-state-inline">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                </svg>
-                <span>Aucun saisonnier trouvé</span>
-              </div>
-            </td>
-          </tr>
-          <tr *ngFor="let s of filteredSaisonniers; let i = index"
-              [class.row-paid]="s.paye"
-              [class.alt-row]="i % 2 === 0">
+    <table class="data-table" dir="ltr">
+            <thead>
+      <tr>
+        <th>N°</th>
+        <th>Nom et Prénom</th>
+        <th>N° CIN</th>
+        <th>N° Compte</th>
+        <th>Direction</th> <!-- 🆕 -->
+        <th>Mois de travail</th>
+        <th>Absences(Jours)</th>
+        <th>Durée de travail(Jours)</th>
+        <th>Montant net (DT)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+            <tbody>
+              <tr *ngIf="filteredSaisonniers.length === 0">
+                <td colspan="12" class="empty-row">
+                  <div class="empty-state-inline">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                    </svg>
+                    <span>Aucun saisonnier trouvé</span>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngFor="let s of filteredSaisonniers; let i = index"
+                  [class.row-paid]="s.paye"
+                  [class.alt-row]="i % 2 === 0">
 
-            <!-- Numéro -->
-            <td class="td-center td-muted">{{ i + 1 }}</td>
+                <!-- Numéro -->
+                <td class="td-center td-muted">{{ i + 1 }}</td>
 
-            <!-- Nom complet -->
-            <td class="td-name" dir="rtl">{{ s.prenom }} {{ s.nom }}</td>
+                <!-- Nom complet -->
+                <td class="td-name" dir="rtl">{{ s.prenom }} {{ s.nom }}</td>
 
-            <!-- CIN -->
-            <td class="td-center td-mono">{{ s.cin }}</td>
+                <!-- CIN -->
+                <td class="td-center td-mono">{{ s.cin }}</td>
 
-            
+                <td>
+                  <input type="text" class="input-rib text-center"
+                        [(ngModel)]="s.rib"
+                        placeholder="RIB / N° compte..."
+                        (change)="save()">
+                </td>
 
-            <td>
-              <input type="text" class="input-rib text-center"
-                     [(ngModel)]="s.rib"
-                     placeholder="RIB / N° compte..."
-                     (change)="save()">
-            </td>
-
-            <td class="td-center">
-  <span class="mois-pill">{{ s.moisTravail || '—' }}</span>
-</td>
-
-            <!-- Date début -->
-            
+                <!-- Direction -->
                 <td class="td-center">
-              <input type="number" class="input-num absence-input"
-                     [(ngModel)]="s.absences" min="0" [max]="s.duree"
-                     (change)="recalcRow(s); save()">
-            </td>
-            <!-- Durée -->
-            <!-- Durée -->
-              <td class="td-center">
-                <span class="input-num" style="display:inline-block; padding: 4px 8px;">
-                  {{ s.duree }}
-                </span>
-              </td>
+                  <span class="direction-pill">{{ s.regionNom || '—' }}</span>
+                </td>
 
-            <!-- Absences -->
-            
+                <td class="td-center">
+                  <span class="mois-pill">{{ s.moisTravail || '—' }}</span>
+                </td>
 
-            <!-- Montant net -->
-            <td class="td-center td-montant" [class.montant-zero]="s.montantNet === 0">
-              <span class="montant-val">{{ s.montantNet | number:'1.3-3' }}</span>
-              <span class="montant-currency">DT</span>
-            </td>
+                <td class="td-center">
+                  <input type="number" class="input-num absence-input"
+                        [(ngModel)]="s.absences" min="0" [max]="s.duree"
+                        (change)="recalcRow(s); save()">
+                </td>
 
-           
+                <td class="td-center">
+                  <span class="input-num" style="display:inline-block; padding: 4px 8px;">
+                    {{ s.duree }}
+                  </span>
+                </td>
 
-            <!-- Numéro compte -->
-            
+                <!-- Montant net -->
+                <td class="td-center td-montant" [class.montant-zero]="s.montantNet === 0">
+                  <span class="montant-val">{{ s.montantNet | number:'1.3-3' }}</span>
+                  <span class="montant-currency">DT</span>
+                </td>
 
-            <!-- Statut paiement -->
-            
+                <!-- Actions -->
+                <td class="td-center">
+                  <div class="action-btns">
+                    <button class="btn-action btn-detail" (click)="openDetail(s)" title="Détail">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
 
-            <!-- Actions -->
-            <td class="td-center">
-              <div class="action-btns">
-                
-                <button class="btn-action btn-detail" (click)="openDetail(s)" title="Détail">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-
-        <!-- TOTAL ROW -->
-        <tfoot *ngIf="filteredSaisonniers.length > 0">
-          <tr class="total-row">
-            <td colspan="5">Total général</td>
-            <td class="td-center">{{ getTotalAbsences() }}</td>
-            <td class="td-center">{{ getTotalJours() }}</td>
-            
-            <td class="td-center"><strong>{{ getTotalMontant() | number:'1.3-3' }} DT</strong></td>
-            <td colspan="5"></td>
-          </tr>
-        </tfoot>
-      </table>
+            <!-- TOTAL ROW -->
+            <tfoot *ngIf="filteredSaisonniers.length > 0">
+              <tr class="total-row">
+                <td colspan="6">Total général</td>
+                <td class="td-center">{{ getTotalAbsences() }}</td>
+                <td class="td-center">{{ getTotalJours() }}</td>
+                <td class="td-center"><strong>{{ getTotalMontant() | number:'1.3-3' }} DT</strong></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
     </div>
   </div>
 
