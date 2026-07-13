@@ -476,6 +476,7 @@ onMatriculeChange(matricule: string): void {
   this.parentInfo = null;
   this.quotaDepasse = false;
   this.form.nomPrenomParent = '';
+  this.form.email = ''; // 🆕 reset de l'email
 
   if (!matricule || matricule.trim().length === 0) return;
 
@@ -486,12 +487,14 @@ onMatriculeChange(matricule: string): void {
       const data = response.message;
       this.parentInfo = data;
       this.form.nomPrenomParent = data.nomPrenom; // 🔥 auto-fill
+      this.form.email = data.email || '';         // 🆕 auto-fill email
       this.quotaDepasse = data.depasse;
       this.loadingParent = false;
     },
     error: () => {
       this.parentInfo = null;
       this.form.nomPrenomParent = '';
+      this.form.email = ''; // 🆕
       this.quotaDepasse = false;
       this.loadingParent = false;
     }

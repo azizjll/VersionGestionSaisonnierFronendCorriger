@@ -624,6 +624,22 @@
            [style.background]="parentInfo ? '#f1f5f9' : ''"
            [style.color]="parentInfo ? '#475569' : ''">
   </div>
+  <div class="field-group">
+  <label for="email">Email *</label>
+  <input type="email" [(ngModel)]="form.email" id="email" name="email"
+         #email="ngModel" required email placeholder="email@exemple.com"
+         [readonly]="!!parentInfo"
+         [style.background]="parentInfo ? '#f1f5f9' : ''"
+         [style.color]="parentInfo ? '#475569' : ''"
+         [class.input-error]="email.invalid && email.touched">
+  <small class="error-msg" *ngIf="email.touched && email.errors?.['required']">
+    ⚠️ L'email est obligatoire.
+  </small>
+  <small class="error-msg" *ngIf="email.touched && email.errors?.['email']">
+    ⚠️ Format d'email invalide.
+  </small>
+</div>
+
 
 </div>
 
@@ -699,18 +715,7 @@
           </div>
 
           <!-- Email -->
-          <div class="field-group">
-            <label for="email">Email *</label>
-            <input type="email" [(ngModel)]="form.email" id="email" name="email"
-                   #email="ngModel" required email placeholder="email@exemple.com"
-                   [class.input-error]="email.invalid && email.touched">
-            <small class="error-msg" *ngIf="email.touched && email.errors?.['required']">
-              ⚠️ L'email est obligatoire.
-            </small>
-            <small class="error-msg" *ngIf="email.touched && email.errors?.['email']">
-              ⚠️ Format d'email invalide.
-            </small>
-          </div>
+          <!-- Email -->
 
           <!-- Téléphone -->
           <div class="field-group">
