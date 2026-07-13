@@ -428,6 +428,7 @@
     </div>
 
     <!-- Documents -->
+    <!-- Documents -->
     <h4 class="col-title" style="margin-top:18px">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -435,26 +436,79 @@
       </svg>
       Documents joints
     </h4>
+
     <div class="docs-list">
-      <!-- S6835: div cliquable → role="button" + keyboard -->
+      <!-- Documents déjà existants (non marqués pour suppression) -->
       <div *ngFor="let doc of selectedCandidature?.documents"
            class="doc-item"
-           (click)="telechargerDoc(doc.url, doc.nomFichier)"
-           (keydown.enter)="telechargerDoc(doc.url, doc.nomFichier)"
-           (keydown.space)="telechargerDoc(doc.url, doc.nomFichier)"
-           role="button"
-           tabindex="0"
-           style="cursor:pointer">
+           [class.doc-item-removed]="isDocMarkedForDeletion(doc.id)">
+
+        <span class="doc-clickable"
+              (click)="telechargerDoc(doc.url, doc.nomFichier)"
+              (keydown.enter)="telechargerDoc(doc.url, doc.nomFichier)"
+              (keydown.space)="telechargerDoc(doc.url, doc.nomFichier)"
+              role="button"
+              tabindex="0"
+              style="cursor:pointer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <span>{{ doc.nomFichier }}</span>
+          <span class="doc-type">{{ doc.type }}</span>
+        </span>
+
+        <button type="button"
+                class="doc-remove-btn"
+                *ngIf="!isDocMarkedForDeletion(doc.id)"
+                (click)="marquerDocPourSuppression(doc.id)"
+                title="Supprimer ce document">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+
+        <button type="button"
+                class="doc-undo-btn"
+                *ngIf="isDocMarkedForDeletion(doc.id)"
+                (click)="annulerSuppressionDoc(doc.id)"
+                title="Annuler la suppression">
+          Annuler
+        </button>
+      </div>
+
+      <p class="no-docs" *ngIf="!selectedCandidature?.documents?.length && selectedFiles.length === 0">
+        Aucun document joint.
+      </p>
+
+      <!-- Nouveaux fichiers sélectionnés (pas encore envoyés) -->
+      <div *ngFor="let file of selectedFiles; let i = index" class="doc-item doc-item-new">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
         </svg>
-        <span>{{ doc.nomFichier }}</span>
-        <span class="doc-type">{{ doc.type }}</span>
+        <span>{{ file.name }}</span>
+        <span class="doc-type doc-type-new">Nouveau</span>
+        <button type="button" class="doc-remove-btn" (click)="removeSelectedFile(i)" title="Retirer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
       </div>
-      <p class="no-docs" *ngIf="!selectedCandidature?.documents?.length">
-        Aucun document joint.
-      </p>
+    </div>
+
+    <div class="field-group">
+      <label for="add-docs" class="btn-add-doc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Ajouter un document
+      </label>
+      <input id="add-docs"
+             type="file"
+             multiple
+             style="display:none"
+             (change)="onFilesSelected($event)">
     </div>
 
   </div>

@@ -1,3 +1,60 @@
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.doc-clickable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.doc-item-removed {
+  opacity: 0.5;
+  text-decoration: line-through;
+  background: #fee2e2;
+}
+.doc-item-new {
+  background: #ecfdf5;
+  border-color: #86efac;
+}
+.doc-type-new {
+  color: #16a34a;
+  font-weight: 600;
+}
+.doc-remove-btn, .doc-undo-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #dc2626;
+  padding: 4px;
+}
+.doc-undo-btn {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 600;
+}
+.btn-add-doc {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #eff6ff;
+  color: #1e50a0;
+  border: 1px dashed #1e50a0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+.btn-add-doc:hover {
+  background: #dbeafe;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 $font:       'Plus Jakarta Sans', sans-serif;

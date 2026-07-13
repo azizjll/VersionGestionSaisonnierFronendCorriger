@@ -76,6 +76,8 @@ activeMoisFilter: string = 'ALL';
   diplome!: File;
   contrat!: File;
   
+  selectedFiles: File[] = [];
+docsToDelete: number[] = [];
 
   regions: Region[] = []; // toutes les régions
   myRegion!: Region;      // région du RH connecté
@@ -276,6 +278,8 @@ compareStructureIds = (a: number | null, b: number | null): boolean => {
   this.selectedCandidature = { ...cand, saisonnier: { ...cand.saisonnier } };
   this.selectedCandidatureStructure = null;
   this.selectedStructureId = null;
+  this.selectedFiles = [];
+  this.docsToDelete = [];
   this.showDossierModal = true;
   this.isLoadingStructure = true;
 
@@ -521,6 +525,32 @@ exportPDF(): void {
     );
   });
 }
+
+onFilesSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files) {
+    this.selectedFiles.push(...Array.from(input.files));
+  }
+  input.value = ''; // permet de re-sélectionner le même fichier si besoin
+}
+
+removeSelectedFile(index: number): void {
+  this.selectedFiles.splice(index, 1);
+}
+
+marquerDocPourSuppression(docId: number): void {
+  if (!this.docsToDelete.includes(docId)) {
+    this.docsToDelete.push(docId);
+  }
+}
+
+annulerSuppressionDoc(docId: number): void {
+  this.docsToDelete = this.docsToDelete.filter(id => id !== docId);
+}
+
+isDocMarkedForDeletion(docId: number): boolean {
+  return this.docsToDelete.includes(docId);
+}
   updateCandidature(): void {
   const formData = new FormData();
   formData.append('nom',        this.selectedCandidature.saisonnier.nom);
@@ -549,6 +579,16 @@ if (this.selectedStructureId) {
     title: 'Mise à jour...',
     allowOutsideClick: false,
     didOpen: () => Swal.showLoading()
+  });
+
+  // 🆕 Nouveaux documents à uploader
+  this.selectedFiles.forEach(file => {
+    formData.append('documents', file, file.name);
+  });
+
+  // 🆕 Documents existants à supprimer
+  this.docsToDelete.forEach(id => {
+    formData.append('documentsToDelete', id.toString());
   });
 
   this.candidatureService.updateCandidature(this.selectedCandidature.id, formData)
