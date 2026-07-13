@@ -143,7 +143,7 @@
     <th>Absences(Jours)</th>
     <th>Durée de travail(Jours)</th>
     <th>Montant net (DT)</th>
-    <th>Statut</th>
+    
     <th>Actions</th>
   </tr>
 </thead>
@@ -215,14 +215,7 @@
             
 
             <!-- Statut paiement -->
-            <td class="td-center">
-              <span class="status-pill"
-                    [class.pill-paid]="s.paye"
-                    [class.pill-unpaid]="!s.paye">
-                <span class="pill-dot"></span>
-                {{ s.paye ? 'Payé' : 'Impayé' }}
-              </span>
-            </td>
+            
 
             <!-- Actions -->
             <td class="td-center">

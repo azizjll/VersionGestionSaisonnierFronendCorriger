@@ -582,7 +582,7 @@ const headers = ['N°', 'Nom et Prénom', 'N° CIN', 'Nbre de jours de travail',
   doc.setFontSize(8);
   doc.setTextColor(219, 234, 254);       // bleu très clair
   doc.text(
-    `Total agents : ${this.filteredSaisonniers.length}  |  ` +
+    `Total saisonniers : ${this.filteredSaisonniers.length}  |  ` +
     `Total jours travaillés : ${this.getTotalJours()}  |  ` +
     `Total absences : ${this.getTotalAbsences()}  |  ` +
     `Montant total : ${this.getTotalMontant().toFixed(3)} DT`,

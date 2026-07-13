@@ -25,9 +25,6 @@ export class PresencePdfExportService {
     const WHITE:    [number,number,number] = [255, 255, 255];
     const LINE:     [number,number,number] = [200, 210, 230];
     const ALT_ROW:  [number,number,number] = [248, 250, 255];
-    const GREEN:    [number,number,number] = [22,  163, 74];
-    const ORANGE:   [number,number,number] = [234, 179, 8];
-    const RED:      [number,number,number] = [220, 38,  38];
 
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
@@ -75,35 +72,6 @@ export class PresencePdfExportService {
     doc.setLineWidth(0.3);
     doc.line(14, 47, pageW - 14, 47);
 
-    // ── STATS BOXES ─────────────────────────────────────────────────
-    const payes   = rows.filter(r => r.statut === 'paye').length;
-    const impayes = rows.filter(r => r.statut === 'impaye').length;
-    const totalAbsJ = rows.reduce((s, r) => s + r.absences, 0);
-
-    const boxes = [
-      { label: 'Saisonniers',      val: rows.length,              color: PRIMARY },
-      { label: 'Payés',            val: payes,                    color: GREEN   },
-      { label: 'Non payés',        val: impayes,                  color: RED     },
-      { label: 'Jours absence',    val: totalAbsJ,                color: ORANGE  },
-      { label: 'Masse salariale',  val: `${totals.totalMontant.toFixed(3)} DT`, color: [79,70,229] as [number,number,number] },
-    ];
-
-    const bW = 44; const bH = 14;
-    const bStartX = 14; const bStartY = 50; const bGap = 5;
-
-    boxes.forEach((b, i) => {
-      const x = bStartX + i * (bW + bGap);
-      doc.setFillColor(...b.color);
-      doc.roundedRect(x, bStartY, bW, bH, 2, 2, 'F');
-      doc.setTextColor(...WHITE);
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.text(String(b.val), x + bW / 2, bStartY + 7, { align: 'center' });
-      doc.setFontSize(6);
-      doc.setFont('helvetica', 'normal');
-      doc.text(b.label, x + bW / 2, bStartY + 12, { align: 'center' });
-    });
-
     // ── TABLEAU ──────────────────────────────────────────────────────
     const tableRows = rows.map((r, idx) => [
       idx + 1,
@@ -114,7 +82,6 @@ export class PresencePdfExportService {
       r.dureeContrat - r.absences,
       r.dureeContrat,
       r.montantNet.toFixed(3),
-      r.statut === 'paye' ? 'Payé' : 'Non payé',
     ]);
 
     // Ligne totaux
@@ -124,15 +91,14 @@ export class PresencePdfExportService {
       totals.totalJours - totals.totalAbsences,
       totals.totalJours,
       totals.totalMontant.toFixed(3),
-      '',
     ] as any);
 
     autoTable(doc, {
-      startY: bStartY + bH + 5,
+      startY: 53,
       head: [[
         'N°', 'Nom et Prénom', 'CIN', 'N° Compte (RIB)',
         'Absences (j)', 'Jours travaillés', 'Durée (j)',
-        'Montant net (DT)', 'Statut paiement'
+        'Montant net (DT)'
       ]],
       body: tableRows,
       theme: 'grid',
@@ -147,35 +113,16 @@ export class PresencePdfExportService {
       },
       alternateRowStyles: { fillColor: ALT_ROW },
       columnStyles: {
-        0: { halign: 'center', cellWidth: 8  },
-        1: { cellWidth: 38 },
-        2: { halign: 'center', cellWidth: 20 },
-        3: { cellWidth: 40 },
-        4: { halign: 'center', cellWidth: 20 },
-        5: { halign: 'center', cellWidth: 22 },
-        6: { halign: 'center', cellWidth: 18 },
-        7: { halign: 'center', cellWidth: 25 },
-        8: { halign: 'center', cellWidth: 25 },
+        0: { halign: 'center', cellWidth: 10 },
+        1: { cellWidth: 45 },
+        2: { halign: 'center', cellWidth: 25 },
+        3: { cellWidth: 48 },
+        4: { halign: 'center', cellWidth: 25 },
+        5: { halign: 'center', cellWidth: 28 },
+        6: { halign: 'center', cellWidth: 22 },
+        7: { halign: 'center', cellWidth: 30 },
       },
       didDrawCell: (data) => {
-        // Colorier la colonne Statut paiement (index 8)
-        if (data.section === 'body' && data.column.index === 8) {
-          const row = rows[data.row.index];
-          if (!row) return;
-          const color: [number,number,number] = row.statut === 'paye'
-            ? [187, 247, 208]
-            : [254, 202, 202];
-          doc.setFillColor(...color);
-          doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
-          doc.setTextColor(...DARK);
-          doc.setFontSize(7);
-          doc.text(
-            row.statut === 'paye' ? 'Payé ✓' : 'Non payé',
-            data.cell.x + data.cell.width / 2,
-            data.cell.y + data.cell.height / 2 + 2,
-            { align: 'center' }
-          );
-        }
         // Ligne totaux en gras (dernière ligne)
         if (data.section === 'body' && data.row.index === rows.length) {
           doc.setFillColor(235, 242, 255);
